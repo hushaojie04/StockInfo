@@ -1,95 +1,88 @@
 package sj.android.stock;
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageView;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 
 import java.util.ArrayList;
 
 import sj.android.stock.fragment.ArticleFragment;
 import sj.android.stock.fragment.FindFragment;
+import sj.android.stock.fragment.MessageFragment;
 import sj.android.stock.fragment.MyFragment;
+import sj.android.stock.view.FragmentTabHost;
 
 public class MainActivity extends FragmentActivity {
     private ViewPager vp;
     //定义一个布局
     private LayoutInflater layoutInflater;
     private View rootView;
-
+    private FrameLayout titlebar;
     //定义数组来存放按钮图片
-    private int mImageViewArray[] = {R.drawable.tab_obd_selector, R.drawable.tab_aircleaner_selector, R.drawable.tab_setup_selector};
-
+    private int mImageViewArray[] = {R.drawable.tab_news_selector, R.drawable.tab_find_selector, R.drawable.tab_message_selector, R.drawable.tab_mine_selector};
     //Tab选项卡的文字
-    private String mTextviewArray[] = {"车况", "过滤器", "设置"};
+    private int mTextviewArray[] = {R.string.news, R.string.find, R.string.message, R.string.mine};
+    //定义FragmentTabHost对象
+    private FragmentTabHost mTabHost;
+    private TextView titleView;
+    private ImageButton searchBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         rootView = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(R.layout.activity_main);
-
+        initHead();
+        initView();
     }
 
     /**
-     * 初始化Fragment
+     * 初始化组件
      */
-    private void initPage() {
+    private void initView() {
         ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
         fragmentList.add(new ArticleFragment());
         fragmentList.add(new FindFragment());
+        fragmentList.add(new MessageFragment());
         fragmentList.add(new MyFragment());
+        //实例化布局对象
+        layoutInflater = LayoutInflater.from(this);
 
-        //给ViewPager设置适配器
-        vp = (ViewPager) findViewById(R.id.realtabcontent);
-        vp.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager(), fragmentList));
-        vp.setOffscreenPageLimit(3);
-        vp.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        //实例化TabHost对象，得到TabHost
+        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setTabcontent(android.R.id.tabcontent).setTabs(android.R.id.tabs);
+        mTabHost.setOnItemClickListener(new FragmentTabHost.OnItemClickListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-//                checkTabBtn(mTabButtonLayout, position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
+            public void onItemClick(ViewGroup parent, View view, int position) {
+                updateTitle(getResources().getString(mTextviewArray[position]), position == 0);
             }
         });
+        mTabHost.setTabAdapter(this, mTabHost.new TabAdapter(fragmentList, mImageViewArray, mTextviewArray, R.layout.itemview));
+
     }
 
-    /**
-     * 给Tab按钮设置图标和文字
-     */
-    private View getTabItemView(int index) {
-        View view = layoutInflater.inflate(R.layout.itemview, null);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT, 1);
-        view.setLayoutParams(params);
-        view.setTag(index);
-        ImageView imageView = (ImageView) view.findViewById(R.id.imageview);
-        imageView.setImageResource(mImageViewArray[index]);
-//        ScreenAdapter.getInstance(this).setup(ScreenAdapter.AT_TabItem, imageView, 3);
 
-        TextView textView = (TextView) view.findViewById(R.id.textview);
-        textView.setText(mTextviewArray[index]);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int item = (int) v.getTag();
-                vp.setCurrentItem(item);
-            }
-        });
-        return view;
+    private void initHead() {
+        titlebar = (FrameLayout) findViewById(R.id.titlebar);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) titlebar.getLayoutParams();
+        params.height = ScreenAdapter.getInstance(this).getHeadHeight();
+        titlebar.requestLayout();
+        titleView = (TextView) findViewById(R.id.title);
+        searchBtn= (ImageButton) findViewById(R.id.searchBtn);
     }
+
+    public void updateTitle(String title, boolean isShowSearch) {
+        titleView.setText(title);
+        searchBtn.setVisibility(isShowSearch ? View.VISIBLE : View.INVISIBLE);
+    }
+
 }

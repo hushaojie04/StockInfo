@@ -12,15 +12,14 @@ import sj.android.stock.R;
 /**
  * Created by Administrator on 2015/10/22.
  */
-public class MyFragment extends Fragment {
+public class MessageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fg_mine, null);
+        return inflater.inflate(R.layout.fg_message,null);
     }
-
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", "onResume " + " " +  this.getClass().getSimpleName());
+        Log.d("log", "onResume " + " "+ " " + this.getClass().getSimpleName());
     }
 
     @Override

@@ -14,7 +14,7 @@ public class ScreenAdapter {
     public int screenHeight;
     private float screenRatio;
     //标题栏占屏幕的比例
-    private float headHRatio = 0.5f / 7.8f;
+    private float headHRatio = 0.6f / 7.8f;
     //底部TAB按键栏占屏幕的比例
     private float tailHRatio = 0.6f / 7.8f;
     //中间内容占屏幕的比例
@@ -44,7 +44,6 @@ public class ScreenAdapter {
     }
 
     public int getTailHeight() {
-        int childWidth = screenWidth / 3;
         return (int) (tailHRatio * screenHeight);
     }
 
