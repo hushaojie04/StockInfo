@@ -23,15 +23,12 @@ import sj.android.stock.view.FragmentTabHost;
 
 public class MainActivity extends FragmentActivity {
     private ViewPager vp;
-    //¶¨ÒåÒ»¸ö²¼¾Ö
     private LayoutInflater layoutInflater;
     private View rootView;
     private FrameLayout titlebar;
-    //¶¨ÒåÊý×éÀ´´æ·Å°´Å¥Í¼Æ¬
     private int mImageViewArray[] = {R.drawable.tab_news_selector, R.drawable.tab_find_selector, R.drawable.tab_message_selector, R.drawable.tab_mine_selector};
-    //TabÑ¡Ïî¿¨µÄÎÄ×Ö
     private int mTextviewArray[] = {R.string.news, R.string.find, R.string.message, R.string.mine};
-    //¶¨ÒåFragmentTabHost¶ÔÏó
+    //ï¿½ï¿½ï¿½ï¿½FragmentTabHostï¿½ï¿½ï¿½ï¿½
     private FragmentTabHost mTabHost;
     private TextView titleView;
     private ImageButton searchBtn;
@@ -46,7 +43,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     /**
-     * ³õÊ¼»¯×é¼þ
+     * ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½
      */
     private void initView() {
         ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
@@ -54,10 +51,8 @@ public class MainActivity extends FragmentActivity {
         fragmentList.add(new FindFragment());
         fragmentList.add(new MessageFragment());
         fragmentList.add(new MyFragment());
-        //ÊµÀý»¯²¼¾Ö¶ÔÏó
         layoutInflater = LayoutInflater.from(this);
 
-        //ÊµÀý»¯TabHost¶ÔÏó£¬µÃµ½TabHost
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setTabcontent(android.R.id.tabcontent).setTabs(android.R.id.tabs);
         mTabHost.setOnItemClickListener(new FragmentTabHost.OnItemClickListener() {

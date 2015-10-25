@@ -12,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.security.acl.Group;
@@ -23,7 +24,7 @@ import utils.LogUtils;
 /**
  * Created by Administrator on 2015/10/23.
  */
-public class FragmentTabHost extends LinearLayout {
+public class FragmentTabHost extends RelativeLayout {
     private static final int CURRENT_TAB = 0x1;
     private int tabcontent = 0;
     private LinearLayout tabs;
@@ -33,7 +34,6 @@ public class FragmentTabHost extends LinearLayout {
 
     public FragmentTabHost(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setOrientation(VERTICAL);
     }
 
     public FragmentTabHost(Context context) {
@@ -59,7 +59,7 @@ public class FragmentTabHost extends LinearLayout {
         Fragment fragment = tabAdapter.fragments.get(position);
         FragmentTransaction ft = obtainFragmentTransaction(position);
         if (fragment.isAdded()) {
-            fragment.onResume(); // Æô¶¯Ä¿±êtabµÄonResume()
+            fragment.onResume(); // ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½tabï¿½ï¿½onResume()
         } else {
             ft.add(tabcontent, fragment);
         }
@@ -82,7 +82,7 @@ public class FragmentTabHost extends LinearLayout {
 
     private FragmentTransaction obtainFragmentTransaction(int index) {
         FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-        // ÉèÖÃÇĞ»»¶¯»­
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ğ»ï¿½ï¿½ï¿½ï¿½ï¿½
         if (index > getCurrentItem()) {
 //            ft.setCustomAnimations(R.anim.slide_left_in, R.anim.slide_left_out);
         } else {

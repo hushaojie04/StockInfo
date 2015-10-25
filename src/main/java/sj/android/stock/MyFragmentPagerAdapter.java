@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
     ArrayList<Fragment> list;
@@ -14,6 +15,8 @@ public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
         this.list = list;
 
     }
+
+
 
 
     @Override

@@ -46,26 +46,24 @@
 
             <sj.android.stock.view.FragmentTabHost
                 android:id="@android:id/tabhost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <FrameLayout
-                    android:id="@android:id/tabcontent"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#f6f6f6" />
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
                 <LinearLayout
                     android:id="@android:id/tabs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
                     android:background="#ffffff"
                     android:orientation="horizontal" />
+
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@android:id/tabs"
+                    android:background="#f6f6f6" />
+
             </sj.android.stock.view.FragmentTabHost>
         </LinearLayout>
     </LinearLayout>

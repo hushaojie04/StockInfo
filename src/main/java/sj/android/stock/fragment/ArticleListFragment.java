@@ -6,27 +6,41 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import sj.android.stock.R;
+import utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/10/22.
  */
 public class ArticleListFragment extends Fragment {
+    int id = 0;
+    static int _ID;
+
+    public ArticleListFragment() {
+        _ID++;
+        id = _ID;
+        LogUtils.D("onCreate" + id);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fg_news_list, null);
+        View root = inflater.inflate(R.layout.fg_news_list, null);
+        TextView textView = (TextView) root.findViewById(R.id.text);
+        textView.setText("listfragment id=" + id);
+        return root;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", "onResume " + " " + " " + this.getClass().getSimpleName());
+        Log.d("log", id + " onResume " + " " + " " + this.getClass().getSimpleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("log", "onPause " + this.getClass().getSimpleName());
+        Log.d("log", id + " onPause " + this.getClass().getSimpleName());
     }
 }
