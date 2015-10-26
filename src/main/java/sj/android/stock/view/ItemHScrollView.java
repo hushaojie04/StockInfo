@@ -26,6 +26,7 @@ public class ItemHScrollView extends HorizontalScrollView {
 
     public ItemHScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setHorizontalScrollBarEnabled(false);
         Row = new LinearLayout(context);
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         Row.setLayoutParams(layoutParams);
@@ -33,22 +34,57 @@ public class ItemHScrollView extends HorizontalScrollView {
     }
 
     public void setSelectedItem(int position) {
+        LogUtils.D("setSelectedItem " + position);
         currentPosition = position;
         scrollToItem(position);
+//        doIndicator(position);
     }
 
     public void setItemHScrollViewIndicator(ItemHScrollViewIndicator indicator) {
         this.indicator = indicator;
+        indicator.setItemPadding(10, 10);
     }
 
     public void onPageScrolled(int position, float percent, boolean toRight) {
-
-//        View item = Row.getChildAt(position);
-//        if (item.getX() - item.getScrollX() != indicator.getX0()) {
-//            indicator.work();
-//        }
-        if (percent != 0)
+        if (percent != 0) {
+            doIndicator(position, percent, toRight);
             scrollByItem(position, percent, toRight);
+        }
+    }
+
+    private void doIndicator(int position) {
+        indicator.work(Row.getChildAt(position).getX() - getScrollX(), Row.getChildAt(position).getMeasuredWidth());
+        indicator.invalidate();
+    }
+
+    private void doIndicator(int position, float percent, boolean toRight) {
+        LogUtils.D("#######position " + position + " " + currentPosition);
+
+        float a0 = Row.getChildAt(position).getMeasuredWidth();
+        float b0 = 0;
+        float left = Row.getChildAt(position).getLeft();
+
+        float diff0;
+        if (!toRight) {//ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            if (position < adapter.getCount() - 1) {
+                b0 = Row.getChildAt(position + 1).getMeasuredWidth();
+                diff0 = b0 - a0;
+                float x = Row.getChildAt(position + 1).getLeft() - getScrollX();
+                float diff = left + (x - left) * percent;
+                indicator.work(diff, diff + a0 + diff0 * percent);
+            }
+        } else {
+            if (position > 0) {
+                b0 = Row.getChildAt(position).getMeasuredWidth();
+                diff0 = b0 - a0;
+                float x = Row.getChildAt(position).getLeft() - getScrollX();
+                LogUtils.D(getScrollX() + " " + Row.getChildAt(position).getLeft() + " " + percent);
+                float diff = left + (x - left) * (1 - percent);
+                indicator.work(diff, diff + a0 + diff0 * (1 - percent));
+            }
+        }
+
+        indicator.invalidate();
     }
 
     public void setAdpater(Adapter adapter) {
@@ -75,6 +111,12 @@ public class ItemHScrollView extends HorizontalScrollView {
             });
             Row.addView(item);
         }
+        Row.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                setSelectedItem(0);
+            }
+        }, 1000);
     }
 
     public void setPositionOffset(float offset) {
@@ -82,9 +124,9 @@ public class ItemHScrollView extends HorizontalScrollView {
     }
 
     private void scrollToItem(int position) {
-        LogUtils.D("scrollToItem " + position);
+//        LogUtils.D("scrollToItem " + position);
         float x = Row.getChildAt(position).getX();
-//        scrollTo((int) (x - positionOffset), 0);
+        scrollTo((int) (x - positionOffset), 0);
     }
 
 
@@ -94,10 +136,11 @@ public class ItemHScrollView extends HorizontalScrollView {
     private void scrollByItem(int position, float percent, boolean toRight) {
         float delta;
         float x = 0;
+
 //        LogUtils.D("position " + position);
 //        LogUtils.D("onPageScrolled " + x + " " + scrollByX + " " + delta);
-        if (toRight) {//ÊÖÖ¸»¬ÏòÓÒ
-            if (position < adapter.getCount()) {
+        if (toRight) {//ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            if (position < adapter.getCount() - 1) {
                 delta = (Row.getChildAt(position + 1).getMeasuredWidth()) * percent;
                 delta = -(lastX - scrollX - positionOffset) * (1 - percent);
                 x = scrollX - delta;
@@ -115,16 +158,16 @@ public class ItemHScrollView extends HorizontalScrollView {
     }
 
     public void touchDown() {
-        if (currentPosition < adapter.getCount()) {
+        if (currentPosition < adapter.getCount() - 1) {
             nextX = Row.getChildAt(currentPosition + 1).getX();
         }
         if (currentPosition > 0) {
             lastX = Row.getChildAt(currentPosition - 1).getX();
         }
         scrollX = getScrollX();
-        LogUtils.D("currentPosition " + currentPosition);
-        LogUtils.D("touchDown " + nextX + " " + lastX);
-        LogUtils.D("scrollX " + scrollX);
+//        LogUtils.D("currentPosition " + currentPosition);
+//        LogUtils.D("touchDown " + nextX + " " + lastX);
+//        LogUtils.D("scrollX " + scrollX);
 
     }
 

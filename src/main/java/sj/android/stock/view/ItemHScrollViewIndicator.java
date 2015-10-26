@@ -12,6 +12,7 @@ import android.view.View;
 
 import sj.android.stock.R;
 import utils.BitmapUtils;
+import utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/10/26.
@@ -20,7 +21,8 @@ public class ItemHScrollViewIndicator extends View {
     Bitmap backgroud;
     Bitmap foreground;
     Paint paint;
-    float startX, endY;
+    float startX, endX;
+    int paddingLeft, paddingRight;
 
     public ItemHScrollViewIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,18 +36,21 @@ public class ItemHScrollViewIndicator extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-//        NinePatch np = new NinePatch(bmp_9, bmp_9.getNinePatchChunk(), null);
-//        Rect rect = new Rect(0, 0, getMeasuredWidth(), bmp_9.getHeight());
-//        np.draw(canvas, rect);
         canvas.drawBitmap(BitmapUtils.resizeBitmap(backgroud, getMeasuredWidth(), getMeasuredHeight()), 0, 0, paint);
-        if ((int) (endY - startX) > 0)
-            canvas.drawBitmap(BitmapUtils.resizeBitmap(foreground, (int) (endY - startX), getMeasuredHeight()), startX, endY, paint);
+        if ((int) (endX - startX) > 0) {
+            canvas.drawBitmap(BitmapUtils.resizeBitmap(foreground, (int) (endX - startX - paddingLeft - paddingRight), getMeasuredHeight()), startX+paddingLeft, 0, paint);
+        }
     }
 
     public void work(float x1, float x2) {
         startX = x1;
-        endY = x2;
+        endX = x2;
+
+    }
+
+    public void setItemPadding(int paddingLeft, int paddingRight) {
+        this.paddingLeft = paddingLeft;
+        this.paddingRight = paddingRight;
     }
 
     public float getX0() {
@@ -53,7 +58,7 @@ public class ItemHScrollViewIndicator extends View {
     }
 
     public float getX1() {
-        return endY;
+        return endX;
 
     }
 }

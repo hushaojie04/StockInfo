@@ -1,9 +1,11 @@
 package sj.android.stock.fragment;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -45,14 +47,28 @@ public class ArticleFragment extends Fragment {
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mItemHScrollView.getLayoutParams();
         params.height = ScreenAdapter.getInstance(null).getHeadHeight() / 2;
         mItemHScrollView.requestLayout();
-        mItemHScrollView.setAdpater(new TabButtonAdapter(array));
         mItemHScrollView.setPositionOffset(0);
         indicator = (ItemHScrollViewIndicator) root.findViewById(R.id.indicator);
+        mItemHScrollView.setItemHScrollViewIndicator(indicator);
+        mItemHScrollView.setAdpater(new TabButtonAdapter(array));
+        mItemHScrollView.setOnItemClickListener(new ItemHScrollView.OnItemClickListener() {
+            @Override
+            public void onItemClick(ViewGroup parent, View view, int position) {
+                ((ArticleListFragment) fragmentList.get(position)).setText(view.getTag().toString());
+            }
+        });
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    ArrayList<Fragment> fragmentList;
 
     private void initViewPager(View root) {
         mViewPager = (ViewPager) root.findViewById(R.id.content);
-        ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
+        fragmentList = new ArrayList<Fragment>();
         for (int i = 0; i < array.length; i++)
             fragmentList.add(new ArticleListFragment());
         FragmentActivity fragmentActivity = getActivity();
@@ -79,7 +95,7 @@ public class ArticleFragment extends Fragment {
                     lastOffset = positionOffset;
                     return;
                 }
-                //ÊÖÖ¸»¬ÏòÓÒ
+                //cv       ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 boolean toRight = false;
                 if (lastOffset > positionOffset) {//to right
                     toRight = true;
@@ -88,8 +104,7 @@ public class ArticleFragment extends Fragment {
                 }
                 mItemHScrollView.onPageScrolled(position, positionOffset, toRight);
                 lastOffset = positionOffset;
-                String s = toRight ? "toRight" : "toLeft";
-                LogUtils.D(s);
+
             }
 
             @Override
@@ -142,6 +157,7 @@ public class ArticleFragment extends Fragment {
         public View getView(ViewGroup parent, int position) {
             TextView textView = new TextView(parent.getContext());
             textView.setText(array[position]);
+            textView.setTag(array[position]);
             return textView;
         }
     }

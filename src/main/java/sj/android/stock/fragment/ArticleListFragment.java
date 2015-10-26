@@ -24,12 +24,19 @@ public class ArticleListFragment extends Fragment {
         LogUtils.D("onCreate" + id);
     }
 
+    TextView textView;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fg_news_list, null);
-        TextView textView = (TextView) root.findViewById(R.id.text);
-        textView.setText("listfragment id=" + id);
+        textView = (TextView) root.findViewById(R.id.text);
         return root;
+    }
+
+    public void setText(String string) {
+        LogUtils.D(string);
+        if (textView != null)
+            textView.setText("listfragment" + id + " " + string);
     }
 
     @Override
