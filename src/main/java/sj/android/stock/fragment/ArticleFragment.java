@@ -1,31 +1,34 @@
 package sj.android.stock.fragment;
 
-import android.app.ListFragment;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import sj.android.stock.MyFragmentPagerAdapter;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
+import sj.android.stock.view.ItemHScrollViewIndicator;
+import sj.android.stock.view.ItemHScrollView;
+import utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/10/22.
  */
 public class ArticleFragment extends Fragment {
     ViewPager mViewPager;
-    HorizontalScrollView mHorizontalScrollView;
+    ItemHScrollView mItemHScrollView;
+    ItemHScrollViewIndicator indicator;
+    ViewGroup tabs;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,28 +38,75 @@ public class ArticleFragment extends Fragment {
         return root;
     }
 
+    String[] array = {"aa", "bbbb", "ccccccc", "ddd", "eeeee", "ffffffffffff", "gggg", "hhhhhhhhhhhhhhhhh", "iii", "jjjjjjjjj", "kk"};
+
     private void initScrollView(View root) {
-        mHorizontalScrollView = (HorizontalScrollView) root.findViewById(R.id.typeTab);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mHorizontalScrollView.getLayoutParams();
-        params.height = ScreenAdapter.getInstance(null).getHeadHeight()/2;
-        mHorizontalScrollView.requestLayout();
+        mItemHScrollView = (ItemHScrollView) root.findViewById(R.id.typeTab);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mItemHScrollView.getLayoutParams();
+        params.height = ScreenAdapter.getInstance(null).getHeadHeight() / 2;
+        mItemHScrollView.requestLayout();
+        mItemHScrollView.setAdpater(new TabButtonAdapter(array));
+        mItemHScrollView.setPositionOffset(0);
+        indicator = (ItemHScrollViewIndicator) root.findViewById(R.id.indicator);
     }
 
     private void initViewPager(View root) {
         mViewPager = (ViewPager) root.findViewById(R.id.content);
         ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
-        Fragment btFragment = new ArticleListFragment();
-        Fragment secondFragment = new ArticleListFragment();
-        Fragment thirdFragment = new ArticleListFragment();
-        Fragment fourthFragment = new ArticleListFragment();
-        fragmentList.add(btFragment);
-        fragmentList.add(secondFragment);
-        fragmentList.add(thirdFragment);
-        fragmentList.add(fourthFragment);
+        for (int i = 0; i < array.length; i++)
+            fragmentList.add(new ArticleListFragment());
         FragmentActivity fragmentActivity = getActivity();
-        //给ViewPager设置适配器
         mViewPager.setAdapter(new MyFragmentPagerAdapter(fragmentActivity.getSupportFragmentManager(), fragmentList));
-        mViewPager.setCurrentItem(0);//设置当前显示标签页为第一页
+        mViewPager.setCurrentItem(0);
+        mViewPager.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mItemHScrollView.touchDown();
+                        break;
+                }
+                return false;
+            }
+        });
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            float lastOffset;
+            boolean isScrolling = false;
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (lastOffset == 0) {
+                    lastOffset = positionOffset;
+                    return;
+                }
+                //��ָ������
+                boolean toRight = false;
+                if (lastOffset > positionOffset) {//to right
+                    toRight = true;
+                } else {
+                    toRight = false;
+                }
+                mItemHScrollView.onPageScrolled(position, positionOffset, toRight);
+                lastOffset = positionOffset;
+                String s = toRight ? "toRight" : "toLeft";
+                LogUtils.D(s);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mItemHScrollView.setSelectedItem(position);
+                lastOffset = 0;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == 1) {
+                    isScrolling = true;
+                } else {
+                    isScrolling = false;
+                }
+            }
+        });
     }
 
     @Override
@@ -69,5 +119,30 @@ public class ArticleFragment extends Fragment {
     public void onPause() {
         super.onPause();
         Log.d("log", "onPause " + this.getClass().getSimpleName());
+    }
+
+    class TabButtonAdapter implements ItemHScrollView.Adapter {
+        String[] array;
+
+        public TabButtonAdapter(String[] array) {
+            this.array = array;
+        }
+
+        @Override
+        public int getCount() {
+            return array.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return array[position];
+        }
+
+        @Override
+        public View getView(ViewGroup parent, int position) {
+            TextView textView = new TextView(parent.getContext());
+            textView.setText(array[position]);
+            return textView;
+        }
     }
 }

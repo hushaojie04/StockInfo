@@ -4,21 +4,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <HorizontalScrollView
+    <sj.android.stock.view.ItemHScrollView
         android:id="@+id/typeTab"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content" />
 
-        <LinearLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>
+    <sj.android.stock.view.ItemHScrollViewIndicator
+        android:id="@+id/indicator"
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent" />
 </LinearLayout>
