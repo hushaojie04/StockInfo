@@ -81,6 +81,9 @@ public class ArticleFragment extends Fragment {
                     case MotionEvent.ACTION_DOWN:
                         mItemHScrollView.touchDown();
                         break;
+                    case MotionEvent.ACTION_UP:
+                        mItemHScrollView.touchUp();
+                        break;
                 }
                 return false;
             }
