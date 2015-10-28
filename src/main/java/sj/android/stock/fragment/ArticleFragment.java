@@ -70,7 +70,7 @@ public class ArticleFragment extends Fragment {
         mViewPager = (ViewPager) root.findViewById(R.id.content);
         fragmentList = new ArrayList<Fragment>();
         for (int i = 0; i < array.length; i++)
-            fragmentList.add(new ArticleListFragment());
+            fragmentList.add(new ArticleListFragment(array[i]));
         FragmentActivity fragmentActivity = getActivity();
         mViewPager.setAdapter(new MyFragmentPagerAdapter(fragmentActivity.getSupportFragmentManager(), fragmentList));
         mViewPager.setCurrentItem(0);
@@ -94,18 +94,21 @@ public class ArticleFragment extends Fragment {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                if (Math.abs(lastOffset - positionOffset) < 0.005f) return;
+
                 if (lastOffset == 0) {
                     lastOffset = positionOffset;
                     return;
                 }
-                //cv       ��ָ������
                 boolean toRight = false;
                 if (lastOffset > positionOffset) {//to right
                     toRight = true;
                 } else {
                     toRight = false;
                 }
-                mItemHScrollView.onPageScrolled(position, positionOffset, toRight);
+
+                LogUtils.D(position + " " + convert(positionOffset));
+                mItemHScrollView.onPageScrolled(position, convert(positionOffset), toRight);
                 lastOffset = positionOffset;
 
             }
@@ -125,6 +128,12 @@ public class ArticleFragment extends Fragment {
                 }
             }
         });
+    }
+
+    static float convert(float value) {
+        long l1 = Math.round(value * 1000);   //四舍五入
+        float ret = l1 / 1000.0f;               //注意：使用   100.0   而不是   100
+        return ret;
     }
 
     @Override

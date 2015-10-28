@@ -1,5 +1,6 @@
 package sj.android.stock.fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,13 +15,16 @@ import utils.LogUtils;
 /**
  * Created by Administrator on 2015/10/22.
  */
+@SuppressLint("ValidFragment")
 public class ArticleListFragment extends Fragment {
     int id = 0;
     static int _ID;
+    String dd;
 
-    public ArticleListFragment() {
-        _ID++;
-        id = _ID;
+    public ArticleListFragment(String dd) {
+        super();
+        id =  _ID++;
+        this.dd = dd;
         LogUtils.D("onCreate" + id);
     }
 
@@ -30,13 +34,12 @@ public class ArticleListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fg_news_list, null);
         textView = (TextView) root.findViewById(R.id.text);
+        textView.setText("listfragment  " + id + " " + dd);
         return root;
     }
 
     public void setText(String string) {
         LogUtils.D(string);
-        if (textView != null)
-            textView.setText("listfragment" + id + " " + string);
     }
 
     @Override
