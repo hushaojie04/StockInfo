@@ -42,11 +42,12 @@ public class ArticleFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Resources res = getResources();
+        array = res.getStringArray(R.array.category);
+
         View root = inflater.inflate(R.layout.fg_news, null);
         initScrollView(root);
         initViewPager(root);
-        Resources res = getResources();
-        array = res.getStringArray(R.array.category);
         dispatcher = new NetworkDispatcher(new Handler());
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,"");
         return root;

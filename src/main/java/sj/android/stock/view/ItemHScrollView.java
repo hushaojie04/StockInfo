@@ -12,7 +12,8 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import utils.LogUtils;
+import sj.utils.LogUtils;
+
 
 /**
  * Created by Administrator on 2015/10/26.

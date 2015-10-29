@@ -2,7 +2,6 @@ package sj.http;
 
 import android.content.Context;
 
-import com.azt.cardeivce.utils.LogUtils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -11,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+
+import sj.utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/5/5.

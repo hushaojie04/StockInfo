@@ -11,8 +11,8 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import sj.android.stock.R;
-import utils.BitmapUtils;
-import utils.LogUtils;
+import sj.utils.BitmapUtils;
+
 
 /**
  * Created by Administrator on 2015/10/26.

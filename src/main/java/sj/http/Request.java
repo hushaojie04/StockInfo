@@ -2,7 +2,6 @@ package sj.http;
 
 import android.content.Context;
 
-import com.azt.cardeivce.utils.LogUtils;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -10,6 +9,8 @@ import org.apache.http.message.BasicNameValuePair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import sj.utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/4/17.

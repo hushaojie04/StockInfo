@@ -58,12 +58,11 @@
             android:textSize="10dp" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center"
             android:background="@drawable/news_icon_comment"
-            android:scaleType="center"
-            android:scaleX="0.5"
-            android:scaleY="0.5" />
+            android:scaleType="center" />
 
         <TextView
             android:layout_width="wrap_content"

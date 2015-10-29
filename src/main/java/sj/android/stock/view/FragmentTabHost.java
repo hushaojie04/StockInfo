@@ -19,7 +19,7 @@ import java.security.acl.Group;
 import java.util.List;
 
 import sj.android.stock.MainActivity;
-import utils.LogUtils;
+import sj.utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/10/23.
