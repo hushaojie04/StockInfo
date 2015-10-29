@@ -1,4 +1,4 @@
-package utils;
+package sj.utils;
 
 public class CRC16 {
     static char chCRCHTalbe[] = // CRC ��λ�ֽ�ֵ��

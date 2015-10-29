@@ -1,11 +1,13 @@
 package sj.android.stock.fragment;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,28 +21,36 @@ import java.util.ArrayList;
 import sj.android.stock.MyFragmentPagerAdapter;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
+import sj.android.stock.view.CatchTouchViewPager;
 import sj.android.stock.view.ItemHScrollViewIndicator;
 import sj.android.stock.view.ItemHScrollView;
-import utils.LogUtils;
+import sj.http.JsonObjectRequest;
+import sj.http.NetworkDispatcher;
+import sj.http.Request;
+import sj.utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/10/22.
  */
 public class ArticleFragment extends Fragment {
-    ViewPager mViewPager;
+    CatchTouchViewPager mViewPager;
     ItemHScrollView mItemHScrollView;
     ItemHScrollViewIndicator indicator;
     ViewGroup tabs;
+    String[] array;
+    NetworkDispatcher dispatcher;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fg_news, null);
         initScrollView(root);
         initViewPager(root);
+        Resources res = getResources();
+        array = res.getStringArray(R.array.category);
+        dispatcher = new NetworkDispatcher(new Handler());
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,"");
         return root;
     }
-
-    String[] array = {"aa", "bbbb", "ccccccc", "ddd", "eeeee", "ffffffffffff", "gggg", "hhhhhhhhhhhhhhhhh", "iii", "jjjjjjjjj", "kk"};
 
     private void initScrollView(View root) {
         mItemHScrollView = (ItemHScrollView) root.findViewById(R.id.typeTab);
@@ -67,7 +77,7 @@ public class ArticleFragment extends Fragment {
     ArrayList<Fragment> fragmentList;
 
     private void initViewPager(View root) {
-        mViewPager = (ViewPager) root.findViewById(R.id.content);
+        mViewPager = (CatchTouchViewPager) root.findViewById(R.id.content);
         fragmentList = new ArrayList<Fragment>();
         for (int i = 0; i < array.length; i++)
             fragmentList.add(new ArticleListFragment(array[i]));
@@ -170,6 +180,11 @@ public class ArticleFragment extends Fragment {
             TextView textView = new TextView(parent.getContext());
             textView.setText(array[position]);
             textView.setTag(array[position]);
+            ColorStateList csl = (ColorStateList) getResources().getColorStateList(R.color.tab_text_selector);
+            if (csl != null) {
+                textView.setTextColor(csl);//设置按钮文字颜色
+            }
+            textView.setTag("position " + position);
             return textView;
         }
     }

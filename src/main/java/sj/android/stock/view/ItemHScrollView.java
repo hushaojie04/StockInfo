@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import utils.LogUtils;
 
@@ -28,6 +29,8 @@ public class ItemHScrollView extends HorizontalScrollView {
         super(context, attrs);
         setHorizontalScrollBarEnabled(false);
         Row = new LinearLayout(context);
+        Row.setBackgroundColor(0xffffffff);
+
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         Row.setLayoutParams(layoutParams);
         addView(Row);
@@ -41,6 +44,14 @@ public class ItemHScrollView extends HorizontalScrollView {
 //        scrollToItem(position);
 //        doIndicator(position);
         ischange = true;
+        for (int i = 0; i < Row.getChildCount(); i++) {
+            TextView item = (TextView) Row.getChildAt(i);
+            if (i == position) {
+                item.setSelected(true);
+            } else {
+                item.setSelected(false);
+            }
+        }
     }
 
     public void setItemHScrollViewIndicator(ItemHScrollViewIndicator indicator) {
@@ -50,7 +61,7 @@ public class ItemHScrollView extends HorizontalScrollView {
 
     public void onPageScrolled(int position, float percent, boolean toRight) {
         if (percent != 0) {
-//            doIndicator(position, percent, toRight);
+            doIndicator(position, percent, toRight);
             scrollByItem(position, percent, toRight);
         }
     }
@@ -195,7 +206,7 @@ public class ItemHScrollView extends HorizontalScrollView {
             if (!ischange && isup) {
                 LogUtils.D("toLeft " + "  middel");
                 delta = (currentX - scrollX - positionOffset) * percent;
-            } else if (position >= 0) {
+            } else if (position >= 0 && position != currentPosition) {
 //                delta = (Row.getChildAt(position + 1).getMeasuredWidth()) * percent;
                 delta = (nextX - scrollX - positionOffset) * percent;
             }
