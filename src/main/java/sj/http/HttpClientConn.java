@@ -37,7 +37,7 @@ public class HttpClientConn {
         HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
         HttpConnectionParams.setSoTimeout(httpParams, 5000);
         HttpResponse response = mClient.execute(httpRequest);
-        httpRequest.abort();
+//        httpRequest.abort();
         return response;
     }
 

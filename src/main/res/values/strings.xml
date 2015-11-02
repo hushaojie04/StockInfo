@@ -15,9 +15,12 @@
     <string name="xlistview_footer_hint_ready">松开载入更多</string>
     <string-array name="category">
         <item>股市资讯分析</item>
+        <item>开户知识</item>
         <item>开户流程</item>
-        <item>投资理财</item>
         <item>开户介绍</item>
         <item>投资理财</item>
     </string-array>
+    <string name="d">原创</string>
+    <string name="e">转载</string>
+
 </resources>

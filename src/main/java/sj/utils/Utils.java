@@ -5,6 +5,8 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -159,10 +161,18 @@ public class Utils {
 
     public static String getPhone(Context context) {
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        String deviceid = tm.getDeviceId();//»ñÈ¡ÖÇÄÜÉè±¸Î¨Ò»±àºÅ
-        String te1 = tm.getLine1Number();//»ñÈ¡±¾»úºÅÂë
-        String imei = tm.getSimSerialNumber();//»ñµÃSIM¿¨µÄĞòºÅ
-        String imsi = tm.getSubscriberId();//µÃµ½ÓÃ»§Id
+        String deviceid = tm.getDeviceId();//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½è±¸Î¨Ò»ï¿½ï¿½ï¿½
+        String te1 = tm.getLine1Number();//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        String imei = tm.getSimSerialNumber();//ï¿½ï¿½ï¿½SIMï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        String imsi = tm.getSubscriberId();//ï¿½Ãµï¿½ï¿½Ã»ï¿½Id
         return imei;
     }
+
+    public static String parseTimestamp(long timestamp) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");//å®šä¹‰æ ¼å¼ï¼Œä¸æ˜¾ç¤ºæ¯«ç§’
+        Timestamp now = new Timestamp(timestamp*1000);//è·å–ç³»ç»Ÿå½“å‰æ—¶é—´
+        String str = df.format(now);
+        return str;
+    }
+
 }

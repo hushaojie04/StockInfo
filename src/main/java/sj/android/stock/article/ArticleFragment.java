@@ -1,5 +1,6 @@
-package sj.android.stock.fragment;
+package sj.android.stock.article;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -16,40 +17,51 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import sj.android.stock.MyFragmentPagerAdapter;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
+import sj.android.stock.URL;
 import sj.android.stock.view.CatchTouchViewPager;
 import sj.android.stock.view.ItemHScrollViewIndicator;
 import sj.android.stock.view.ItemHScrollView;
+import sj.http.JsonArrayRequest;
 import sj.http.JsonObjectRequest;
 import sj.http.NetworkDispatcher;
 import sj.http.Request;
+import sj.http.Response;
 import sj.utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/10/22.
  */
-public class ArticleFragment extends Fragment {
+@SuppressLint("ValidFragment")
+public class ArticleFragment extends Fragment implements Response.Listener<JSONArray> {
     CatchTouchViewPager mViewPager;
     ItemHScrollView mItemHScrollView;
     ItemHScrollViewIndicator indicator;
     ViewGroup tabs;
-    String[] array;
     NetworkDispatcher dispatcher;
+    Map<Integer, String> articleTypes = new HashMap<Integer, String>();
+    Map<String, Integer> requestIds = new HashMap<String, Integer>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Resources res = getResources();
-        array = res.getStringArray(R.array.category);
-
         View root = inflater.inflate(R.layout.fg_news, null);
         initScrollView(root);
         initViewPager(root);
         dispatcher = new NetworkDispatcher(new Handler());
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,"");
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL("arttype=0"));
+        requestIds.put("type", request.getId());
+        request.setListener(this);
+        dispatcher.dispatch(request);
         return root;
     }
 
@@ -61,7 +73,6 @@ public class ArticleFragment extends Fragment {
         mItemHScrollView.setPositionOffset(0);
         indicator = (ItemHScrollViewIndicator) root.findViewById(R.id.indicator);
         mItemHScrollView.setItemHScrollViewIndicator(indicator);
-        mItemHScrollView.setAdpater(new TabButtonAdapter(array));
         mItemHScrollView.setOnItemClickListener(new ItemHScrollView.OnItemClickListener() {
             @Override
             public void onItemClick(ViewGroup parent, View view, int position) {
@@ -79,12 +90,6 @@ public class ArticleFragment extends Fragment {
 
     private void initViewPager(View root) {
         mViewPager = (CatchTouchViewPager) root.findViewById(R.id.content);
-        fragmentList = new ArrayList<Fragment>();
-        for (int i = 0; i < array.length; i++)
-            fragmentList.add(new ArticleListFragment(array[i]));
-        FragmentActivity fragmentActivity = getActivity();
-        mViewPager.setAdapter(new MyFragmentPagerAdapter(fragmentActivity.getSupportFragmentManager(), fragmentList));
-        mViewPager.setCurrentItem(0);
         mViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -159,6 +164,44 @@ public class ArticleFragment extends Fragment {
         Log.d("log", "onPause " + this.getClass().getSimpleName());
     }
 
+    @Override
+    public void onResponse(Request<JSONArray> request, Response<JSONArray> response) {
+        if (request.getId() == requestIds.get("type")) {
+            handleType(response);
+        }
+
+    }
+
+    private void handleType(Response<JSONArray> response) {
+        if (response.result == null) return;
+//        LogUtils.D(response.result.toString());
+        for (int i = 0; i < response.result.length(); i++) {
+            try {
+                JSONObject jsonObject = (JSONObject) response.result.get(i);
+                articleTypes.put(jsonObject.getInt("ID"), jsonObject.getString("typename"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        fragmentList = new ArrayList<Fragment>();
+        for (Map.Entry<Integer, String> entry : articleTypes.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            fragmentList.add(new ArticleListFragment(entry.getKey(), entry.getValue()));
+        }
+        FragmentActivity fragmentActivity = getActivity();
+        mViewPager.setAdapter(new MyFragmentPagerAdapter(fragmentActivity.getSupportFragmentManager(), fragmentList));
+        mViewPager.setCurrentItem(0);
+
+        String[] dd = new String[articleTypes.size()];
+        articleTypes.values().toArray(dd);
+        mItemHScrollView.setAdpater(new TabButtonAdapter(dd));
+    }
+
+    private void initType() {
+
+    }
+
     class TabButtonAdapter implements ItemHScrollView.Adapter {
         String[] array;
 
@@ -189,4 +232,5 @@ public class ArticleFragment extends Fragment {
             return textView;
         }
     }
+
 }

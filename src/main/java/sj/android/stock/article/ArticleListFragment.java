@@ -1,7 +1,8 @@
-package sj.android.stock.fragment;
+package sj.android.stock.article;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,10 +11,19 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import sj.android.stock.R;
-import sj.android.stock.adapter.ArticleListAdapter;
+import sj.android.stock.URL;
+import sj.http.JsonArrayRequest;
+import sj.http.NetworkDispatcher;
+import sj.http.Request;
+import sj.http.Response;
 import sj.utils.LogUtils;
 import sj.xListview.XListView;
 
@@ -21,14 +31,18 @@ import sj.xListview.XListView;
  * Created by Administrator on 2015/10/22.
  */
 @SuppressLint("ValidFragment")
-public class ArticleListFragment extends Fragment implements XListView.IXListViewListener {
-    String dd;
+public class ArticleListFragment extends Fragment implements XListView.IXListViewListener, Response.Listener<JSONArray> {
+    String typeName;
     private ArrayList<String> items = new ArrayList<String>();
     private static int refreshCnt = 0;
+    private int typeId = 0;
+    NetworkDispatcher dispatcher;
+    private List<ArticleInfo> articleInfoList = new ArrayList<ArticleInfo>();
 
-    public ArticleListFragment(String dd) {
+    public ArticleListFragment(int typeId, String typeName) {
         super();
-        this.dd = dd;
+        this.typeName = typeName;
+        this.typeId = typeId;
         geneItems();
     }
 
@@ -37,7 +51,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     private void onLoad() {
         mListView.stopRefresh();
         mListView.stopLoadMore();
-        mListView.setRefreshTime("¸Õ¸Õ");
+        mListView.setRefreshTime("ï¿½Õ¸ï¿½");
     }
 
     ArticleListAdapter articleListAdapter;
@@ -46,8 +60,6 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fg_news_list, null);
         mListView = (XListView) root.findViewById(R.id.acticleListView);
-        articleListAdapter = new ArticleListAdapter(items);
-        mListView.setAdapter(articleListAdapter);
         mListView.setPullLoadEnable(true);
         mListView.setPullRefreshEnable(true);
         mListView.setXListViewListener(this);
@@ -74,7 +86,16 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+        if (typeId == 2)
+            load();
         return root;
+    }
+
+    private void load() {
+        dispatcher = new NetworkDispatcher(new Handler());
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL("arttype=" + typeId));
+        request.setListener(this);
+        dispatcher.dispatch(request);
     }
 
     public void setText(String string) {
@@ -84,13 +105,13 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", dd + " onResume " + " " + " " + this.getClass().getSimpleName());
+        Log.d("log", typeId + " onResume " + " " + " " + this.getClass().getSimpleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("log", dd + " onPause " + this.getClass().getSimpleName());
+        Log.d("log", typeId + " onPause " + this.getClass().getSimpleName());
     }
 
     private void geneItems() {
@@ -104,7 +125,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                articleListAdapter = new ArticleListAdapter(items);
+                articleListAdapter = new ArticleListAdapter(articleInfoList);
                 mListView.setAdapter(articleListAdapter);
                 onLoad();
             }
@@ -121,5 +142,23 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
                 onLoad();
             }
         }, 800);
+    }
+
+    @Override
+    public void onResponse(Request<JSONArray> request, Response<JSONArray> response) {
+        if (response.result == null) return;
+        LogUtils.D(typeId + "====" + response.result.toString());
+        for (int i = 0; i < response.result.length(); i++) {
+            ArticleInfo info = new ArticleInfo();
+            try {
+                info.parse((JSONObject) response.result.get(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            articleInfoList.add(info);
+        }
+        articleListAdapter = new ArticleListAdapter(articleInfoList);
+        mListView.setAdapter(articleListAdapter);
+
     }
 }

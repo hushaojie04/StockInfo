@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import sj.android.stock.fragment.ArticleFragment;
+import sj.android.stock.article.ArticleFragment;
 import sj.android.stock.fragment.FindFragment;
 import sj.android.stock.fragment.MessageFragment;
 import sj.android.stock.fragment.MyFragment;
