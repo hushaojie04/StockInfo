@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import sj.android.stock.R;
 import sj.utils.BitmapUtils;
@@ -17,12 +18,16 @@ import sj.utils.BitmapUtils;
 /**
  * Created by Administrator on 2015/10/26.
  */
-public class ItemHScrollViewIndicator extends View {
+public class ItemHScrollViewIndicator extends LinearLayout {
     Bitmap backgroud;
     Bitmap foreground;
     Paint paint;
     float startX, endX;
     int paddingLeft, paddingRight;
+
+    public ItemHScrollViewIndicator(Context context) {
+        this(context, null);
+    }
 
     public ItemHScrollViewIndicator(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -36,16 +41,15 @@ public class ItemHScrollViewIndicator extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(BitmapUtils.resizeBitmap(backgroud, getMeasuredWidth(), getMeasuredHeight()), 0, 0, paint);
-        if ((int) (endX - startX) > 0) {
-            canvas.drawBitmap(BitmapUtils.resizeBitmap(foreground, (int) (endX - startX - paddingLeft - paddingRight), getMeasuredHeight()), startX+paddingLeft, 0, paint);
+        canvas.drawBitmap(BitmapUtils.resizeBitmap(backgroud, getMeasuredWidth(), 15), 0, getHeight() - 15, paint);
+        if ((int) Math.abs(endX - startX - paddingLeft - paddingRight) > 0) {
+            canvas.drawBitmap(BitmapUtils.resizeBitmap(foreground, (int) Math.abs(endX - startX - paddingLeft - paddingRight), 15), startX + paddingLeft, getHeight() - 15, paint);
         }
     }
 
     public void work(float x1, float x2) {
         startX = x1;
         endX = x2;
-
     }
 
     public void setItemPadding(int paddingLeft, int paddingRight) {

@@ -10,12 +10,6 @@
         android:layout_height="wrap_content"
         />
 
-    <sj.android.stock.view.ItemHScrollViewIndicator
-        android:id="@+id/indicator"
-        android:layout_width="match_parent"
-        android:background="#ffffff"
-        android:layout_height="4dp" />
-
     <sj.android.stock.view.CatchTouchViewPager
         android:id="@+id/content"
         android:layout_width="match_parent"
