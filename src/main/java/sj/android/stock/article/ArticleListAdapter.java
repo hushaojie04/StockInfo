@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ArticleListAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return articleInfoList.get(position);
     }
 
     @Override
@@ -57,7 +58,9 @@ public class ArticleListAdapter extends BaseAdapter {
             holder = (Holder) convertView.getTag();
         }
         if (articleInfoList.get(position).flag != null)
+        {
             holder.flag.setText("【" + articleInfoList.get(position).flag + "】");
+        }
         if (!articleInfoList.get(position).title.equals(""))
             holder.title.setText(articleInfoList.get(position).title);
         holder.sendTime.setText("" + Utils.parseTimestamp(articleInfoList.get(position).senddate));

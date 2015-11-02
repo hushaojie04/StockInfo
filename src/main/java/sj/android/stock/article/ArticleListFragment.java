@@ -1,6 +1,7 @@
 package sj.android.stock.article;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -43,7 +44,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         super();
         this.typeName = typeName;
         this.typeId = typeId;
-        geneItems();
+//        geneItems();
     }
 
     XListView mListView;
@@ -68,9 +69,12 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-
-                Toast.makeText(ArticleListFragment.this.getActivity().getApplicationContext(), items.get(position),
-                        Toast.LENGTH_SHORT).show();
+                position--;
+                Intent intent = new Intent(getActivity(), BodyActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("info", articleInfoList.get(position));
+                intent.putExtra("info", bundle);
+                startActivity(intent);
             }
         });
         mListView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -78,8 +82,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,
                                        int position, long id) {
-                Toast.makeText(ArticleListFragment.this.getActivity().getApplicationContext(), items.get(position),
-                        Toast.LENGTH_SHORT).show();
+
             }
 
             @Override
@@ -113,12 +116,12 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         super.onPause();
         Log.d("log", typeId + " onPause " + this.getClass().getSimpleName());
     }
-
-    private void geneItems() {
-        for (int i = 0; i != 20; ++i) {
-            items.add("refresh cnt " + (++refreshCnt));
-        }
-    }
+//
+//    private void geneItems() {
+//        for (int i = 0; i != 20; ++i) {
+//            items.add("refresh cnt " + (++refreshCnt));
+//        }
+//    }
 
     @Override
     public void onRefresh() {
@@ -137,7 +140,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                geneItems();
+//                geneItems();
                 articleListAdapter.notifyDataSetChanged();
                 onLoad();
             }

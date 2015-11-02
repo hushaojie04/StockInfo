@@ -46,7 +46,6 @@ import sj.utils.LogUtils;
 public class ArticleFragment extends Fragment implements Response.Listener<JSONArray> {
     CatchTouchViewPager mViewPager;
     ItemHScrollView mItemHScrollView;
-    ItemHScrollViewIndicator indicator;
     ViewGroup tabs;
     NetworkDispatcher dispatcher;
     Map<Integer, String> articleTypes = new HashMap<Integer, String>();
@@ -71,8 +70,6 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
         params.height = ScreenAdapter.getInstance(null).getHeadHeight() / 2;
         mItemHScrollView.requestLayout();
         mItemHScrollView.setPositionOffset(0);
-        indicator = (ItemHScrollViewIndicator) root.findViewById(R.id.indicator);
-        mItemHScrollView.setItemHScrollViewIndicator(indicator);
         mItemHScrollView.setOnItemClickListener(new ItemHScrollView.OnItemClickListener() {
             @Override
             public void onItemClick(ViewGroup parent, View view, int position) {

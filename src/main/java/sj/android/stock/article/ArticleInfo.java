@@ -3,10 +3,12 @@ package sj.android.stock.article;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2015/11/1.
  */
-public class ArticleInfo {
+public class ArticleInfo implements Serializable {
     public int id;
     public int typeid;
     public String title;
@@ -16,6 +18,7 @@ public class ArticleInfo {
     public String description;
     public String flag;
     public int postnum;
+
     public void parse(JSONObject jsonObject) {
         try {
             id = jsonObject.getInt("id");
