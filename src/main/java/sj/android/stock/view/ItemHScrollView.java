@@ -19,9 +19,8 @@ import sj.utils.LogUtils;
  * Created by Administrator on 2015/10/26.
  */
 public class ItemHScrollView extends HorizontalScrollView {
-    ItemHScrollViewIndicator indicator;
     Adapter adapter;
-    LinearLayout Row;
+    ItemHScrollViewIndicator Row;
     OnItemClickListener mOnItemClickListener;
     int currentPosition;
     float positionOffset;
@@ -29,21 +28,30 @@ public class ItemHScrollView extends HorizontalScrollView {
     public ItemHScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setHorizontalScrollBarEnabled(false);
-        Row = new LinearLayout(context);
+        Row = new ItemHScrollViewIndicator(context);
         Row.setBackgroundColor(0xffffffff);
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         Row.setLayoutParams(layoutParams);
+        Row.setItemPadding(30, 30);
         addView(Row);
     }
+
+//    @Override
+//    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+//        super.onScrollChanged(l, t, oldl, oldt);
+//        LogUtils.D("onScrollChanged " + l + " " + t + " " + oldl + " " + oldt);
+//        int left = l - t;
+//        indicator.work(Row.getChildAt(currentPosition).getX() - getScrollX(), Row.getChildAt(currentPosition).getX() - getScrollX() + Row.getChildAt(currentPosition).getMeasuredWidth());
+//    }
 
     boolean ischange = false;
 
     public void setSelectedItem(int position) {
         LogUtils.D("setSelectedItem " + position);
         currentPosition = position;
-//        scrollToItem(position);
-//        doIndicator(position);
+        scrollToItem(position);
+        doIndicator(position);
         ischange = true;
         for (int i = 0; i < Row.getChildCount(); i++) {
             TextView item = (TextView) Row.getChildAt(i);
@@ -55,21 +63,16 @@ public class ItemHScrollView extends HorizontalScrollView {
         }
     }
 
-    public void setItemHScrollViewIndicator(ItemHScrollViewIndicator indicator) {
-        this.indicator = indicator;
-        indicator.setItemPadding(30, 30);
-    }
-
     public void onPageScrolled(int position, float percent, boolean toRight) {
         if (percent != 0) {
-            doIndicator(position, percent, toRight);
+//            doIndicator(position, percent, toRight);
             scrollByItem(position, percent, toRight);
         }
     }
 
     private void doIndicator(int position) {
-        indicator.work(Row.getChildAt(position).getX() - getScrollX(), Row.getChildAt(position).getMeasuredWidth());
-        indicator.invalidate();
+        Row.work(Row.getChildAt(position).getX(), Row.getChildAt(position).getX() + Row.getChildAt(position).getMeasuredWidth());
+        Row.invalidate();
     }
 
     float lastScrollX = 0;
@@ -78,67 +81,12 @@ public class ItemHScrollView extends HorizontalScrollView {
     boolean isScrolling = false;
     boolean isMovingB;
 
-    private void doIndicator(int position, float percent, boolean toRight) {
-//        LogUtils.D("#######position " + position + " " + currentPosition);
-        float a0 = Row.getChildAt(position).getMeasuredWidth();
-        float b0 = 0;
-        if (lastScrollX == 0) {
-            lastScrollX = getScrollX();
-            return;
-        }
-        float width_diff0;
-        float xxx = 0;
-
-        if (!toRight) {//
-            if (position < adapter.getCount() - 1) {
-                b0 = Row.getChildAt(position + 1).getMeasuredWidth();
-                width_diff0 = b0 - a0;
-                float width_ = a0 + width_diff0 * percent;
-                if (getScrollX() < Row.getMeasuredWidth() - getMeasuredWidth()) {
-                    //
-                    isScrolling = true;
-                    xxx = curVisiblePosision = positionOffset;
-                    isMoving = false;
-                } else {
-                    if (isScrolling) {
-                        isScrolling = false;
-                        isMoving = true;
-                    }
-                    if (isMoving) {
-                        xxx = curVisiblePosision + (Row.getChildAt(position + 1).getLeft() - getScrollX()) * percent;
-                    } else {
-                        xxx = curVisiblePosision + (Row.getChildAt(position + 1).getLeft() - Row.getChildAt(position).getLeft()) * percent;
-                    }
-                }
-                indicator.work(xxx, xxx + width_);
-            }
-        } else {
-            if (position >= 0) {
-                b0 = Row.getChildAt(position + 1).getMeasuredWidth();
-                width_diff0 = a0 - b0;
-                float width_ = b0 + width_diff0 * (1 - percent);
-                if (getScrollX() < Row.getMeasuredWidth() - getMeasuredWidth()) {
-                    //
-                    if (isScrolling) {
-                        isScrolling = false;
-                        isMoving = true;
-                    }
-                    if (isMoving) {
-                        xxx = curVisiblePosision + (Row.getChildAt(position).getLeft() - getScrollX()) * percent;
-                    } else {
-                        xxx = curVisiblePosision = positionOffset;
-                    }
-                } else {
-                    isScrolling = true;
-                    isMoving = false;
-                    xxx = curVisiblePosision + (Row.getChildAt(position).getLeft() - Row.getChildAt(position + 1).getLeft()) * (1 - percent);
-                }
-                indicator.work(xxx, xxx + width_);
-            }
-        }
-        lastScrollX = getScrollX();
-        indicator.invalidate();
-    }
+//    private void doIndicator(int position, float percent, boolean toRight) {
+//
+//
+//        indicator.work(xxx, xxx + width_);
+//        indicator.invalidate();
+//    }
 
     public void setAdpater(Adapter adapter) {
         this.adapter = adapter;
