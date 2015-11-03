@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,11 +41,13 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     private int typeId = 0;
     NetworkDispatcher dispatcher;
     private List<ArticleInfo> articleInfoList = new ArrayList<ArticleInfo>();
+    public int position;
 
-    public ArticleListFragment(int typeId, String typeName) {
+    public ArticleListFragment(int typeId, String typeName, int position) {
         super();
         this.typeName = typeName;
         this.typeId = typeId;
+        this.position = position;
 //        geneItems();
     }
 
@@ -89,16 +93,25 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-        if (typeId == 2)
-            load();
+        load(0, 5, true);
         return root;
     }
 
-    private void load() {
+    int requestid = -1;
+    boolean isReflesh;
+
+    private void load(int start, int end, boolean reflesh) {
+        if (requestid != -1) return;
+        isReflesh = reflesh;
         dispatcher = new NetworkDispatcher(new Handler());
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL("arttype=" + typeId));
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL());
+        request.params.add(new BasicNameValuePair("arttype", "" + typeId));
+        request.params.add(new BasicNameValuePair("start", "" + start));
+        request.params.add(new BasicNameValuePair("end", "" + end));
         request.setListener(this);
+        requestid = request.getId();
         dispatcher.dispatch(request);
+        LogUtils.D("load " + requestid + " " + typeName + " " + typeId);
     }
 
     public void setText(String string) {
@@ -116,20 +129,14 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         super.onPause();
         Log.d("log", typeId + " onPause " + this.getClass().getSimpleName());
     }
-//
-//    private void geneItems() {
-//        for (int i = 0; i != 20; ++i) {
-//            items.add("refresh cnt " + (++refreshCnt));
-//        }
-//    }
+
 
     @Override
     public void onRefresh() {
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                articleListAdapter = new ArticleListAdapter(articleInfoList);
-                mListView.setAdapter(articleListAdapter);
+                load(0, 5, true);
                 onLoad();
             }
         }, 800);
@@ -140,8 +147,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-//                geneItems();
-                articleListAdapter.notifyDataSetChanged();
+                load(articleInfoList.size(), articleInfoList.size() + 5, false);
                 onLoad();
             }
         }, 800);
@@ -149,8 +155,13 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
 
     @Override
     public void onResponse(Request<JSONArray> request, Response<JSONArray> response) {
+        LogUtils.D("onResponse " + requestid + " " + typeName);
+        if (requestid == request.getId()) requestid = -1;
         if (response.result == null) return;
-        LogUtils.D(typeId + "====" + response.result.toString());
+        LogUtils.D("onResponse " + requestid + " " + typeName);
+        if (isReflesh) {
+            articleInfoList.clear();
+        }
         for (int i = 0; i < response.result.length(); i++) {
             ArticleInfo info = new ArticleInfo();
             try {
@@ -160,8 +171,13 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             }
             articleInfoList.add(info);
         }
-        articleListAdapter = new ArticleListAdapter(articleInfoList);
-        mListView.setAdapter(articleListAdapter);
+
+        if (isReflesh) {
+            articleListAdapter = new ArticleListAdapter(articleInfoList);
+            mListView.setAdapter(articleListAdapter);
+        } else {
+            articleListAdapter.notifyDataSetChanged();
+        }
 
     }
 }

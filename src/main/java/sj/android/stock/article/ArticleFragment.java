@@ -17,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +50,6 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
     ItemHScrollView mItemHScrollView;
     ViewGroup tabs;
     NetworkDispatcher dispatcher;
-    Map<Integer, String> articleTypes = new HashMap<Integer, String>();
     Map<String, Integer> requestIds = new HashMap<String, Integer>();
 
     @Override
@@ -57,7 +58,8 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
         initScrollView(root);
         initViewPager(root);
         dispatcher = new NetworkDispatcher(new Handler());
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL("arttype=0"));
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL());
+        request.params.add(new BasicNameValuePair("arttype", "0"));
         requestIds.put("type", request.getId());
         request.setListener(this);
         dispatcher.dispatch(request);
@@ -73,7 +75,7 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
         mItemHScrollView.setOnItemClickListener(new ItemHScrollView.OnItemClickListener() {
             @Override
             public void onItemClick(ViewGroup parent, View view, int position) {
-                ((ArticleListFragment) fragmentList.get(position)).setText(view.getTag().toString());
+                mViewPager.setCurrentItem(position);
             }
         });
     }
@@ -119,8 +121,6 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
                 } else {
                     toRight = false;
                 }
-
-                LogUtils.D(position + " " + convert(positionOffset));
                 mItemHScrollView.onPageScrolled(position, convert(positionOffset), toRight);
                 lastOffset = positionOffset;
 
@@ -128,6 +128,7 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
 
             @Override
             public void onPageSelected(int position) {
+                LogUtils.D("onPageSelected "+position);
                 mItemHScrollView.setSelectedItem(position);
                 lastOffset = 0;
             }
@@ -172,27 +173,23 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
     private void handleType(Response<JSONArray> response) {
         if (response.result == null) return;
 //        LogUtils.D(response.result.toString());
+        fragmentList = new ArrayList<Fragment>();
+        String[] typenames = new String[response.result.length()];
         for (int i = 0; i < response.result.length(); i++) {
             try {
                 JSONObject jsonObject = (JSONObject) response.result.get(i);
-                articleTypes.put(jsonObject.getInt("ID"), jsonObject.getString("typename"));
+                int typeid = jsonObject.getInt("ID");
+                String typename = jsonObject.getString("typename");
+                fragmentList.add(new ArticleListFragment(typeid, typename, i));
+                typenames[i] = typename;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-
-        fragmentList = new ArrayList<Fragment>();
-        for (Map.Entry<Integer, String> entry : articleTypes.entrySet()) {
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-            fragmentList.add(new ArticleListFragment(entry.getKey(), entry.getValue()));
-        }
         FragmentActivity fragmentActivity = getActivity();
         mViewPager.setAdapter(new MyFragmentPagerAdapter(fragmentActivity.getSupportFragmentManager(), fragmentList));
         mViewPager.setCurrentItem(0);
-
-        String[] dd = new String[articleTypes.size()];
-        articleTypes.values().toArray(dd);
-        mItemHScrollView.setAdpater(new TabButtonAdapter(dd));
+        mItemHScrollView.setAdpater(new TabButtonAdapter(typenames));
     }
 
     private void initType() {

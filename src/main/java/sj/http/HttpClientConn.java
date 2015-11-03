@@ -10,9 +10,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 import java.util.Iterator;
+
+import sj.utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/4/17.
@@ -30,14 +33,22 @@ public class HttpClientConn {
     }
 
     public synchronized HttpResponse performRequest(Request<?> request, boolean isSaveInputSteam) throws IOException {
-        HttpUriRequest httpRequest = createHttpRequest(request);
-        HttpParams httpParams = httpRequest.getParams();
-        // TODO: Reevaluate this connection timeout based on more wide-scale
-        // data collection and possibly different for wifi vs. 3G.
-        HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
-        HttpConnectionParams.setSoTimeout(httpParams, 5000);
-        HttpResponse response = mClient.execute(httpRequest);
-//        httpRequest.abort();
+        HttpResponse response = null;
+        synchronized (mClient) {
+            HttpUriRequest httpRequest = createHttpRequest(request);
+            HttpParams httpParams = httpRequest.getParams();
+            // TODO: Reevaluate this connection timeout based on more wide-scale
+            // data collection and possibly different for wifi vs. 3G.
+            HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
+            HttpConnectionParams.setSoTimeout(httpParams, 5000);
+            try {
+                response = mClient.execute(httpRequest);
+            } catch (NullPointerException e) {
+                LogUtils.D("NullPointerException " + e.getMessage());
+            }
+            httpRequest.abort();
+
+        }
         return response;
     }
 
@@ -46,6 +57,7 @@ public class HttpClientConn {
      */
     /* protected */
     private HttpUriRequest createHttpRequest(Request<?> request) {
+        LogUtils.D("request.getMethod()" + request.getMethod());
         switch (request.getMethod()) {
             case Request.Method.DEPRECATED_GET_OR_POST:
                 return null;
@@ -53,6 +65,8 @@ public class HttpClientConn {
                 Iterator<NameValuePair> iterator = request.params.iterator();
                 StringBuilder builder = new StringBuilder();
                 builder.append(request.getURL());
+                LogUtils.D("GET:" + request.getId() + " " + request.getURL());
+
                 int count = 0;
                 while (iterator.hasNext()) {
                     if (count++ != 0) {
@@ -65,6 +79,7 @@ public class HttpClientConn {
                     builder.append("=");
                     builder.append(pair.getValue());
                 }
+                LogUtils.D("GET:" + builder.toString());
                 return new HttpGet(builder.toString());
             case Request.Method.DELETE:
                 return null;

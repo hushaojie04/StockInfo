@@ -24,21 +24,26 @@ public class JsonArrayRequest extends ObjectRequest<JSONArray> {
 
     public void postRequest() {
         try {
-            HttpResponse mHttpResponse = mHttpClientConn.performRequest(this,false);
+            HttpResponse mHttpResponse = mHttpClientConn.performRequest(this, false);
             HttpEntity mHttpEntity = mHttpResponse.getEntity();
-            mJSONArray = new JSONArray(EntityUtils.toString(mHttpEntity,"GBK"));
+            mJSONArray = new JSONArray(EntityUtils.toString(mHttpEntity, "GBK"));
             response.result = mJSONArray;
+//            mHttpEntity.consumeContent();
         } catch (IOException e) {
-            LogUtils.D("JsonObjectRequest error: " + e.getMessage());
+            LogUtils.D(getId() + " JsonObjectRequest error: " + e.getMessage());
             response.error.setDescription(e.getMessage());
             e.printStackTrace();
         } catch (JSONException e) {
             LogUtils.D("JSONException error: " + e.getMessage());
             response.error.setDescription(e.getMessage());
             e.printStackTrace();
+        } catch (NullPointerException e) {
+            LogUtils.D("#####################NullPointerException error: " + e.getMessage());
+            response.error.setDescription(e.getMessage());
+            e.printStackTrace();
         }
 
-}
+    }
 
     @Override
     Response<JSONArray> parseNetworkResponse() {

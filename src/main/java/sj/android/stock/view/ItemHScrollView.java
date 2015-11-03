@@ -139,10 +139,6 @@ public class ItemHScrollView extends HorizontalScrollView {
     private void scrollByItem(int position, float percent, boolean toRight) {
         float delta = 0;
         float x = 0;
-        LogUtils.D("onPageScrolled " + " " + position + " " + currentPosition + " " + toRight);
-        LogUtils.D("ischange " + ischange);
-        LogUtils.D("isup " + isup);
-
         if (toRight) {//
             if (!ischange && isup) {
                 LogUtils.D("toRight " + "  middel");
@@ -168,7 +164,6 @@ public class ItemHScrollView extends HorizontalScrollView {
 
 
     public void touchDown() {
-        LogUtils.D("##############touchDown#############");
         isMoving = false;
         isScrolling = false;
         isMovingB = false;
@@ -191,7 +186,6 @@ public class ItemHScrollView extends HorizontalScrollView {
     boolean isdown;
 
     public void touchUp() {
-        LogUtils.D("##############touchUp#############");
         isup = true;
         isdown = false;
     }
