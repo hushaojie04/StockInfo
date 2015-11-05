@@ -34,6 +34,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "id integer primary key autoincrement," +
                 "aid int," +
                 "typeid int," +
+                "url text," +
                 "body text)";
         db.execSQL(sql);
     }

@@ -8,7 +8,6 @@ import sj.utils.LogUtils;
 public class URL {
     public static final String HOST = "http://192.168.1.181";
     private static final String BASE = "http://192.168.1.181:8080/JavaWebApp/action/read";
-
     public static String getURL(String cmd) {
         LogUtils.D("cmd " + cmd);
         return BASE + "?" + cmd;

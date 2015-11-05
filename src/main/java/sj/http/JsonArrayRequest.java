@@ -24,11 +24,9 @@ public class JsonArrayRequest extends ObjectRequest<JSONArray> {
 
     public void postRequest() {
         try {
-            HttpResponse mHttpResponse = mHttpClientConn.performRequest(this, false);
-            HttpEntity mHttpEntity = mHttpResponse.getEntity();
-            mJSONArray = new JSONArray(EntityUtils.toString(mHttpEntity, "GBK"));
+            String request = mHttpClientConn.performRequest(this, false);
+            mJSONArray = new JSONArray(request);
             response.result = mJSONArray;
-//            mHttpEntity.consumeContent();
         } catch (IOException e) {
             LogUtils.D(getId() + " JsonObjectRequest error: " + e.getMessage());
             response.error.setDescription(e.getMessage());

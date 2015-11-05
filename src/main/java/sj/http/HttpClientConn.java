@@ -32,8 +32,8 @@ public class HttpClientConn {
 
     }
 
-    public synchronized HttpResponse performRequest(Request<?> request, boolean isSaveInputSteam) throws IOException {
-        HttpResponse response = null;
+    public synchronized String performRequest(Request<?> request, boolean isSaveInputSteam) throws IOException {
+        String response = null;
         synchronized (mClient) {
             HttpUriRequest httpRequest = createHttpRequest(request);
             HttpParams httpParams = httpRequest.getParams();
@@ -42,12 +42,12 @@ public class HttpClientConn {
             HttpConnectionParams.setConnectionTimeout(httpParams, 5000);
             HttpConnectionParams.setSoTimeout(httpParams, 5000);
             try {
-                response = mClient.execute(httpRequest);
+                HttpResponse httpResponse = mClient.execute(httpRequest);
+                response = EntityUtils.toString(httpResponse.getEntity(), "GBK");
             } catch (NullPointerException e) {
                 LogUtils.D("NullPointerException " + e.getMessage());
             }
             httpRequest.abort();
-
         }
         return response;
     }
