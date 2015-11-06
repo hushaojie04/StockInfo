@@ -67,4 +67,6 @@
             </sj.android.stock.view.FragmentTabHost>
         </LinearLayout>
     </LinearLayout>
+
+
 </RelativeLayout>

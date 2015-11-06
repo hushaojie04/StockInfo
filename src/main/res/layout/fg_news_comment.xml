@@ -5,6 +5,12 @@
     android:background="#f6f6f6"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:id="@+id/video_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone"></FrameLayout>
 
     <FrameLayout
         android:id="@+id/titlebar"
@@ -28,87 +34,52 @@
         android:layout_height="1dp"
         android:background="@drawable/bottom_line_gray" />
 
-    <sj.android.stock.view.MyScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="我的老师"
+            android:textColor="@android:color/black"
+            android:textSize="20sp" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="#ffffff"
-            android:orientation="vertical">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/writerinfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="10dp"
-                android:text="我的老师"
-                android:textColor="@android:color/black"
-                android:textSize="20sp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/writerinfo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="10dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:text="作者 "
-                    android:textColor="@android:color/darker_gray" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/container"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:id="@+id/video_view"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:visibility="gone"></FrameLayout>
-
-                <Button
-                    android:id="@+id/video_landport"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="全屏不显示该按扭，点击切换横屏" />
-
-                <WebView
-                    android:id="@+id/webView"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent" />
-
-                <TextView
-                    android:id="@+id/video_error"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:text="加载失败，点击刷新！"
-                    android:textColor="#ff0000"
-                    android:textSize="19sp" />
-
-                <TextView
-                    android:id="@+id/video_refresh"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:gravity="center"
-                    android:text="正在刷新。。。"
-                    android:textColor="#ff0000"
-                    android:textSize="19sp" />
-            </LinearLayout>
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="作者 "
+                android:textColor="@android:color/darker_gray" />
         </LinearLayout>
-    </sj.android.stock.view.MyScrollView>
+
+        <LinearLayout
+            android:id="@+id/videoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"></WebView>
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 
 </LinearLayout>

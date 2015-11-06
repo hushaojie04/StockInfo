@@ -3,11 +3,21 @@ package sj.android.stock.article;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextPaint;
+import android.util.DisplayMetrics;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -37,10 +47,18 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
     NetworkDispatcher dispatcher;
     ArticleBodyDao mArticleBodyDao;
     TextView writerinfo, title;
+    FrameLayout video_view;
+    View customView;
+    int mWidth, mHeight;
+    LinearLayout videoLayout;
+    xWebChromeClient xwebchromeclient;
+    WebChromeClient.CustomViewCallback xCustomViewCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉应用标题
+        getScreenWH();
         setContentView(R.layout.fg_news_comment);
         dispatcher = new NetworkDispatcher(new Handler());
         mArticleBodyDao = new ArticleBodyDao(this);
@@ -49,20 +67,65 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         processExtraData();
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (inCustomView()) {
+                hideCustomView();
+                return true;
+            }
+        } else {
+            mWebView.loadUrl("about:blank");
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mWebView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mWebView.onPause();
+    }
+
+    public boolean inCustomView() {
+        return (customView != null);
+    }
+
+    /**
+     * 全屏时按返加键执行退出全屏方法
+     */
+    public void hideCustomView() {
+        xwebchromeclient.onHideCustomView();
+    }
+
     private void initView() {
-        initWebView();
+        videoLayout = (LinearLayout) findViewById(R.id.videoLayout);
         writerinfo = (TextView) findViewById(R.id.writerinfo);
         title = (TextView) findViewById(R.id.title);
         TextPaint tp = title.getPaint();
         tp.setFakeBoldText(true);
+        initWebView();
+    }
+
+    private void getScreenWH() {
+        DisplayMetrics dm = new DisplayMetrics();//获取当前显示的界面大小
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        mWidth = dm.widthPixels;
+        mHeight = dm.heightPixels;//获取当前界面的高度
     }
 
     private void initWebView() {
         mWebView = (WebView) findViewById(R.id.webView);
+        video_view = (FrameLayout) findViewById(R.id.video_view);
         WebSettings ws = mWebView.getSettings();
         ws.setBuiltInZoomControls(true);// 隐藏缩放按钮
         ws.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);// 排版适应屏幕
-        ws.setUseWideViewPort(true);// 可任意比例缩放
+//        ws.setUseWideViewPort(true);// 可任意比例缩放
         ws.setLoadWithOverviewMode(true);// setUseWideViewPort方法设置webview推荐使用的窗口。setLoadWithOverviewMode方法是设置webview加载的页面的模式。
         ws.setSavePassword(true);
         ws.setSaveFormData(true);// 保存表单数据
@@ -70,6 +133,33 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         ws.setGeolocationEnabled(true);// 启用地理定位
         ws.setGeolocationDatabasePath("/data/data/webview/databases/");// 设置定位的数据库路径
         ws.setDomStorageEnabled(true);
+        xwebchromeclient = new xWebChromeClient();
+        mWebView.setWebChromeClient(xwebchromeclient);
+        mWebView.setWebViewClient(new xWebViewClientent());
+        changeViewPort(false);
+    }
+
+    private void changeViewPort(boolean fullScreen) {
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) videoLayout.getLayoutParams();
+        if (fullScreen) {
+            if (mWidth < mHeight) {
+                params.height = (int) (9f / 16 * mWidth);
+                params.width = mWidth;
+            } else {
+                params.height = (int) (9f / 16 * mHeight);
+                params.width = mHeight;
+            }
+            videoLayout.requestLayout();
+        } else {
+            if (mWidth < mHeight) {
+                params.height = (int) (9f / 16 * mWidth);
+                params.width = mWidth;
+            } else {
+                params.height = (int) (9f / 16 * mHeight);
+                params.width = mHeight;
+            }
+            videoLayout.requestLayout();
+        }
     }
 
     private void initHead() {
@@ -79,7 +169,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         titlebar.requestLayout();
     }
 
-    String base = "http://player.youku.com/embed/XMTM3NTI3MjU2NA==?";
+    String base = "http://player.youku.com/embed/XXXXXXXX==?";
     String url = "";
 
     @Override
@@ -98,7 +188,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
                 id = body.substring(body.indexOf("VideoIDS=") + "VideoIDS=".length());
             }
             if (!id.equals("")) {
-                url = base + id;
+                url = base.replace("XXXXXXXX", id);
             }
             LogUtils.D("url#" + url);
             mWebView.loadUrl(url);
@@ -136,6 +226,17 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         }
     }
 
+    @Override
+    public void setRequestedOrientation(int requestedOrientation) {
+        super.setRequestedOrientation(requestedOrientation);
+        if (requestedOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        else
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+    }
+
     private void setArticleInfo(ArticleInfo info) {
         if (info == null) return;
         //头条
@@ -146,5 +247,43 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
             writerinfo.setText(getResources().getString(R.string.reprint) + " " + getResources().getString(R.string.publish) + " " + Utils.parseTimestamp(info.senddate));
         }
         title.setText(info.title);
+    }
+
+    public class xWebChromeClient extends WebChromeClient {
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            super.onShowCustomView(view, callback);
+            LogUtils.D("onShowCustomView");
+            if (customView != null) {
+                callback.onCustomViewHidden();
+                return;
+            }
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            customView = view;
+            video_view.addView(view);
+            video_view.setVisibility(View.VISIBLE);
+            mWebView.setVisibility(View.GONE);
+            xCustomViewCallback = callback;
+        }
+
+
+        @Override
+        public void onHideCustomView() {
+            super.onHideCustomView();
+            LogUtils.D("onHideCustomView");
+            if (customView == null) return;
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            customView.setVisibility(View.GONE);
+            customView = null;
+            video_view.removeView(customView);
+            video_view.setVisibility(View.GONE);
+            mWebView.setVisibility(View.VISIBLE);
+            xCustomViewCallback.onCustomViewHidden();
+        }
+
+    }
+
+    public class xWebViewClientent extends WebViewClient {
+
     }
 }

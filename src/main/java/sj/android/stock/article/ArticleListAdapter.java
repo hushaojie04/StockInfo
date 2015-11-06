@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,30 +49,21 @@ public class ArticleListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.articleitemview, null);
             holder = new Holder();
             holder.description = (TextView) convertView.findViewById(R.id.description);
-            holder.flag = (TextView) convertView.findViewById(R.id.flag);
+            holder.pic = (ImageView) convertView.findViewById(R.id.pic);
             holder.title = (TextView) convertView.findViewById(R.id.title);
-            holder.sendTime = (TextView) convertView.findViewById(R.id.sendTime);
-            holder.comment = (TextView) convertView.findViewById(R.id.comment);
-            holder.tagLayout = (LinearLayout) convertView.findViewById(R.id.tagLayout);
             convertView.setTag(holder);
         } else {
             holder = (Holder) convertView.getTag();
         }
-        if (articleInfoList.get(position).flag != null)
-        {
-            holder.flag.setText("【" + articleInfoList.get(position).flag + "】");
-        }
         if (!articleInfoList.get(position).title.equals(""))
             holder.title.setText(articleInfoList.get(position).title);
-        holder.sendTime.setText("" + Utils.parseTimestamp(articleInfoList.get(position).senddate));
-        holder.comment.setText("" + articleInfoList.get(position).postnum);
         if (!articleInfoList.get(position).description.equals(""))
             holder.description.setText(articleInfoList.get(position).description);
         return convertView;
     }
 
     class Holder {
-        TextView flag, title, sendTime, comment, description;
-        LinearLayout tagLayout;
+        TextView title, description;
+        ImageView pic;
     }
 }

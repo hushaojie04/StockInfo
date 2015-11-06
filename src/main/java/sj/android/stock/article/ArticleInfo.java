@@ -18,6 +18,7 @@ public class ArticleInfo implements Serializable {
     public String description;
     public String flag;
     public int postnum;
+    public String litpic;
 
     public void parse(JSONObject jsonObject) {
         try {
@@ -30,6 +31,7 @@ public class ArticleInfo implements Serializable {
             description = jsonObject.getString("description");
             flag = jsonObject.getString("flag");
             postnum = jsonObject.getInt("postnum");
+            litpic = jsonObject.getString("litpic");
         } catch (JSONException e) {
             e.printStackTrace();
         }
