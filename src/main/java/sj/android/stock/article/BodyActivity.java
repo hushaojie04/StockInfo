@@ -1,7 +1,6 @@
 package sj.android.stock.article;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -10,16 +9,13 @@ import android.text.TextPaint;
 import android.util.DisplayMetrics;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -29,14 +25,14 @@ import org.json.JSONObject;
 
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
-import sj.android.stock.URL;
+import sj.android.stock.MURL;
 import sj.android.stock.db.ArticleBodyDao;
 import sj.http.JsonArrayRequest;
 import sj.http.NetworkDispatcher;
 import sj.http.Request;
 import sj.http.Response;
 import sj.utils.LogUtils;
-import sj.utils.Utils;
+import sj.utils.StringUtils;
 
 /**
  * Created by Administrator on 2015/11/1.
@@ -218,7 +214,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         setArticleInfo(mArticleInfo);
         String body = mArticleBodyDao.query(mArticleInfo);
         if (body == null || body.equals("")) {
-            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
             request.setListener(this);
             dispatcher.dispatch(request);
         } else {
@@ -242,9 +238,9 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         //Í·Ìõ
         String original = getResources().getString(R.string.original);
         if (info.flag != null && info.flag.equals(original)) {
-            writerinfo.setText(info.writer + " " + getResources().getString(R.string.publish) + " " + Utils.parseTimestamp(info.senddate));
+            writerinfo.setText(info.writer + " " + getResources().getString(R.string.publish) + " " + StringUtils.parseTimestamp(info.senddate));
         } else {
-            writerinfo.setText(getResources().getString(R.string.reprint) + " " + getResources().getString(R.string.publish) + " " + Utils.parseTimestamp(info.senddate));
+            writerinfo.setText(getResources().getString(R.string.reprint) + " " + getResources().getString(R.string.publish) + " " + StringUtils.parseTimestamp(info.senddate));
         }
         title.setText(info.title);
     }

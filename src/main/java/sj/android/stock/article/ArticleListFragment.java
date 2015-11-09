@@ -4,14 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Toast;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
@@ -22,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sj.android.stock.R;
-import sj.android.stock.URL;
+import sj.android.stock.MURL;
 import sj.http.JsonArrayRequest;
 import sj.http.NetworkDispatcher;
 import sj.http.Request;
@@ -111,7 +109,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     private void load(int start, int end, boolean reflesh) {
         if (requestid != -1) return;
         isReflesh = reflesh;
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL.getURL());
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getURL());
         request.params.add(new BasicNameValuePair("arttype", "" + typeId));
         request.params.add(new BasicNameValuePair("start", "" + start));
         request.params.add(new BasicNameValuePair("end", "" + end));

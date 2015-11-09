@@ -95,5 +95,6 @@
     <orderEntry type="library" exported="" name="universal-image-loader-1.9.4" level="project" />
     <orderEntry type="library" exported="" name="universal-image-loader-1.9.4-sources" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
+    <orderEntry type="library" name="cordova-2.8.0" level="project" />
   </component>
 </module>

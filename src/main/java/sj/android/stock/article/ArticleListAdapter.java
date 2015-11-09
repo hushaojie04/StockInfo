@@ -6,15 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import sj.android.stock.R;
-import sj.android.stock.article.ArticleInfo;
-import sj.utils.Utils;
 
 /**
  * Created by Administrator on 2015/10/29.

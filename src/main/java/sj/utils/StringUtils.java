@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Administrator on 2015/5/27.
  */
-public class Utils {
+public class StringUtils {
     public static byte[] hexStringToBytes(String hexString) {
         LogUtils.D("hexString=" + hexString);
         if (hexString == null || hexString.equals("")) {
