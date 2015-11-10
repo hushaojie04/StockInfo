@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import sj.android.stock.Cache;
 import sj.android.stock.R;
 import sj.android.stock.MURL;
 import sj.http.JsonArrayRequest;
@@ -26,6 +27,7 @@ import sj.http.NetworkDispatcher;
 import sj.http.Request;
 import sj.http.Response;
 import sj.utils.LogUtils;
+import sj.utils.MD5Util;
 import sj.xListview.XListView;
 
 /**
@@ -40,6 +42,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     NetworkDispatcher dispatcher;
     private List<ArticleInfo> articleInfoList = new ArrayList<ArticleInfo>();
     public int position;
+    public static final int NUM = 10;
 
     public ArticleListFragment(int typeId, String typeName, int position) {
         super();
@@ -48,7 +51,8 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         this.position = position;
         dispatcher = new NetworkDispatcher(new Handler());
 //        geneItems();
-        load(0, 5, true);
+//        if (position == 0)
+//            load(0, NUM, true);
         LogUtils.D("############ArticleListFragment###########" + typeName);
     }
 
@@ -95,7 +99,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             }
         });
         if (articleInfoList.size() == 0)
-            load(0, 5, true);
+            load(0, NUM, true);
         else {
             articleListAdapter = new ArticleListAdapter(articleInfoList);
             mListView.setAdapter(articleListAdapter);
@@ -114,8 +118,19 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         request.params.add(new BasicNameValuePair("start", "" + start));
         request.params.add(new BasicNameValuePair("end", "" + end));
         request.setListener(this);
-        requestid = request.getId();
-        dispatcher.dispatch(request);
+//        requestid = request.getId();
+//        dispatcher.dispatch(request);
+        String cache = Cache.from(getActivity()).getData(MD5Util.MD5(request.getWholeURL()));
+        if (cache != null && !cache.equals("")) {
+            try {
+                handle(new JSONArray(cache));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            request.setListener(this);
+            dispatcher.dispatch(request);
+        }
         LogUtils.D("load " + requestid + " " + typeName + " " + typeId);
     }
 
@@ -141,7 +156,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                load(0, 5, true);
+                load(0, NUM, true);
                 onLoad();
             }
         }, 800);
@@ -149,10 +164,11 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
 
     @Override
     public void onLoadMore() {
+        LogUtils.D("articleInfoList.size()=" + articleInfoList.size());
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                load(articleInfoList.size(), articleInfoList.size() + 5, false);
+                load(articleInfoList.size(), NUM, false);
                 onLoad();
             }
         }, 800);
@@ -166,16 +182,21 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         if (requestid == request.getId()) requestid = -1;
         if (response.result == null) return;
         LogUtils.D("onResponse " + requestid + " " + typeName);
+        Cache.from(getActivity()).save(MD5Util.MD5(request.getWholeURL()), response.result.toString());
+        handle(response.result);
+    }
+
+    private void handle(JSONArray result) {
         if (isReflesh) {
             articleInfoList.clear();
         }
-        if (response.result.length() == 0) {
+        if (result.length() == 0) {
             isLoadNothing = true;
         }
-        for (int i = 0; i < response.result.length(); i++) {
+        for (int i = 0; i < result.length(); i++) {
             ArticleInfo info = new ArticleInfo();
             try {
-                info.parse((JSONObject) response.result.get(i));
+                info.parse((JSONObject) result.get(i));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -189,6 +210,5 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             if (articleListAdapter != null)
                 articleListAdapter.notifyDataSetChanged();
         }
-
     }
 }

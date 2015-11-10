@@ -8,6 +8,8 @@ import android.os.Message;
 import java.util.ArrayList;
 import java.util.List;
 
+import sj.utils.LogUtils;
+
 /**
  * Created by Administrator on 2015/11/9.
  */
@@ -33,9 +35,13 @@ public class AsyncHandler extends Handler {
         }
     }
 
-    public void handle(Work work, Callback callback) {
+    public void setImpl(Work work, Callback callback) {
         mCallback = callback;
         mWorkerHandler.work(work);
+    }
+
+    public void handle() {
+        mWorkerHandler.sendEmptyMessage(0);
     }
 
     public static AsyncHandler getInstance() {
@@ -47,9 +53,14 @@ public class AsyncHandler extends Handler {
     @Override
     public void handleMessage(Message msg) {
         super.handleMessage(msg);
-        if (mCallback != null) {
-            mCallback.onCallback(msg.obj);
+        switch (msg.what) {
+            case DONE:
+                if (mCallback != null) {
+                    mCallback.onCallback(msg.obj);
+                }
+                break;
         }
+
     }
 
     class WorkerHandler extends Handler {
@@ -61,7 +72,6 @@ public class AsyncHandler extends Handler {
 
         public void work(Work work) {
             command = work;
-            WorkerHandler.this.sendEmptyMessage(0);
         }
 
         @Override
@@ -70,6 +80,7 @@ public class AsyncHandler extends Handler {
             AsyncHandler.this.sendEmptyMessage(DOING);
             Message msg1 = new Message();
             msg1.obj = command.work();
+            if (msg1.obj == null) LogUtils.D("!!!!!!!!!!!!!handleMessage--obj==null");
             msg1.what = DONE;
             AsyncHandler.this.sendMessage(msg1);
         }

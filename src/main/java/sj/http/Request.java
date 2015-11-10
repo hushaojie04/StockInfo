@@ -18,10 +18,13 @@ import sj.utils.LogUtils;
 public abstract class Request<T> implements Network {
     public static HttpClientConn mHttpClientConn;
     public Response response = new Response();
+
     public static void clear() {
         mHttpClientConn = null;
     }
+
     public static Context mContext;
+
     /**
      * Supported request methods.
      */
@@ -62,6 +65,11 @@ public abstract class Request<T> implements Network {
     public String getURL() {
         return mURL;
     }
+
+    public String getWholeURL() {
+        return mHttpClientConn.getWholeURL(this);
+    }
+
 
     public int getMethod() {
         return mMethod;

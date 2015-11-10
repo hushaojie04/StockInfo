@@ -53,7 +53,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);//È¥µôÓ¦ÓÃ±êÌâ
+        requestWindowFeature(Window.FEATURE_NO_TITLE);//åŽ»æŽ‰åº”ç”¨æ ‡é¢˜
         getScreenWH();
         setContentView(R.layout.fg_news_comment);
         dispatcher = new NetworkDispatcher(new Handler());
@@ -93,7 +93,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
     }
 
     /**
-     * È«ÆÁÊ±°´·µ¼Ó¼üÖ´ÐÐÍË³öÈ«ÆÁ·½·¨
+     * å…¨å±æ—¶æŒ‰è¿”åŠ é”®æ‰§è¡Œé€€å‡ºå…¨å±æ–¹æ³•
      */
     public void hideCustomView() {
         xwebchromeclient.onHideCustomView();
@@ -109,25 +109,25 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
     }
 
     private void getScreenWH() {
-        DisplayMetrics dm = new DisplayMetrics();//»ñÈ¡µ±Ç°ÏÔÊ¾µÄ½çÃæ´óÐ¡
+        DisplayMetrics dm = new DisplayMetrics();//èŽ·å–å½“å‰æ˜¾ç¤ºçš„ç•Œé¢å¤§å°
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         mWidth = dm.widthPixels;
-        mHeight = dm.heightPixels;//»ñÈ¡µ±Ç°½çÃæµÄ¸ß¶È
+        mHeight = dm.heightPixels;//èŽ·å–å½“å‰ç•Œé¢çš„é«˜åº¦
     }
 
     private void initWebView() {
         mWebView = (WebView) findViewById(R.id.webView);
         video_view = (FrameLayout) findViewById(R.id.video_view);
         WebSettings ws = mWebView.getSettings();
-        ws.setBuiltInZoomControls(true);// Òþ²ØËõ·Å°´Å¥
-        ws.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);// ÅÅ°æÊÊÓ¦ÆÁÄ»
-//        ws.setUseWideViewPort(true);// ¿ÉÈÎÒâ±ÈÀýËõ·Å
-        ws.setLoadWithOverviewMode(true);// setUseWideViewPort·½·¨ÉèÖÃwebviewÍÆ¼öÊ¹ÓÃµÄ´°¿Ú¡£setLoadWithOverviewMode·½·¨ÊÇÉèÖÃwebview¼ÓÔØµÄÒ³ÃæµÄÄ£Ê½¡£
+        ws.setBuiltInZoomControls(true);// éšè—ç¼©æ”¾æŒ‰é’®
+        ws.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);// æŽ’ç‰ˆé€‚åº”å±å¹•
+//        ws.setUseWideViewPort(true);// å¯ä»»æ„æ¯”ä¾‹ç¼©æ”¾
+        ws.setLoadWithOverviewMode(true);// setUseWideViewPortæ–¹æ³•è®¾ç½®webviewæŽ¨èä½¿ç”¨çš„çª—å£ã€‚setLoadWithOverviewModeæ–¹æ³•æ˜¯è®¾ç½®webviewåŠ è½½çš„é¡µé¢çš„æ¨¡å¼ã€‚
         ws.setSavePassword(true);
-        ws.setSaveFormData(true);// ±£´æ±íµ¥Êý¾Ý
+        ws.setSaveFormData(true);// ä¿å­˜è¡¨å•æ•°æ®
         ws.setJavaScriptEnabled(true);
-        ws.setGeolocationEnabled(true);// ÆôÓÃµØÀí¶¨Î»
-        ws.setGeolocationDatabasePath("/data/data/webview/databases/");// ÉèÖÃ¶¨Î»µÄÊý¾Ý¿âÂ·¾¶
+        ws.setGeolocationEnabled(true);// å¯ç”¨åœ°ç†å®šä½
+        ws.setGeolocationDatabasePath("/data/data/webview/databases/");// è®¾ç½®å®šä½çš„æ•°æ®åº“è·¯å¾„
         ws.setDomStorageEnabled(true);
         xwebchromeclient = new xWebChromeClient();
         mWebView.setWebChromeClient(xwebchromeclient);
@@ -170,6 +170,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
 
     @Override
     public void onResponse(Request<JSONArray> request, Response<JSONArray> response) {
+        if (response.result == null) return;
         try {
             JSONObject jsonObject = response.result.getJSONObject(0);
             String body = jsonObject.getString("body");
@@ -235,7 +236,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
 
     private void setArticleInfo(ArticleInfo info) {
         if (info == null) return;
-        //Í·Ìõ
+        //å¤´æ¡
         String original = getResources().getString(R.string.original);
         if (info.flag != null && info.flag.equals(original)) {
             writerinfo.setText(info.writer + " " + getResources().getString(R.string.publish) + " " + StringUtils.parseTimestamp(info.senddate));

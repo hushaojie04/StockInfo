@@ -62,25 +62,7 @@ public class HttpClientConn {
             case Request.Method.DEPRECATED_GET_OR_POST:
                 return null;
             case Request.Method.GET:
-                Iterator<NameValuePair> iterator = request.params.iterator();
-                StringBuilder builder = new StringBuilder();
-                builder.append(request.getURL());
-                LogUtils.D("GET:" + request.getId() + " " + request.getURL());
-
-                int count = 0;
-                while (iterator.hasNext()) {
-                    if (count++ != 0) {
-                        builder.append("&");
-                    } else {
-                        builder.append("?");
-                    }
-                    NameValuePair pair = iterator.next();
-                    builder.append(pair.getName());
-                    builder.append("=");
-                    builder.append(pair.getValue());
-                }
-                LogUtils.D("GET:" + builder.toString());
-                return new HttpGet(builder.toString());
+                return new HttpGet(getWholeURL(request));
             case Request.Method.DELETE:
                 return null;
             case Request.Method.POST: {
@@ -97,5 +79,26 @@ public class HttpClientConn {
             default:
                 throw new IllegalStateException("Unknown request method.");
         }
+    }
+
+    public String getWholeURL(Request<?> request) {
+        Iterator<NameValuePair> iterator = request.params.iterator();
+        StringBuilder builder = new StringBuilder();
+        builder.append(request.getURL());
+        LogUtils.D("GET:" + request.getId() + " " + request.getURL());
+
+        int count = 0;
+        while (iterator.hasNext()) {
+            if (count++ != 0) {
+                builder.append("&");
+            } else {
+                builder.append("?");
+            }
+            NameValuePair pair = iterator.next();
+            builder.append(pair.getName());
+            builder.append("=");
+            builder.append(pair.getValue());
+        }
+        return builder.toString();
     }
 }

@@ -64,7 +64,7 @@ public class ItemHScrollView extends HorizontalScrollView {
     }
 
     public void onPageScrolled(int position, float percent, boolean toRight) {
-        if (percent != 0) {
+        if (!isFromUser && percent != 0) {
 //            doIndicator(position, percent, toRight);
             scrollByItem(position, percent, toRight);
         }
@@ -81,12 +81,13 @@ public class ItemHScrollView extends HorizontalScrollView {
     boolean isScrolling = false;
     boolean isMovingB;
 
-//    private void doIndicator(int position, float percent, boolean toRight) {
+    //    private void doIndicator(int position, float percent, boolean toRight) {
 //
 //
 //        indicator.work(xxx, xxx + width_);
 //        indicator.invalidate();
 //    }
+    boolean isFromUser = false;
 
     public void setAdpater(Adapter adapter) {
         this.adapter = adapter;
@@ -107,6 +108,7 @@ public class ItemHScrollView extends HorizontalScrollView {
                     if (mOnItemClickListener != null) {
                         mOnItemClickListener.onItemClick(Row, item, position);
                     }
+                    isFromUser = true;
                     setSelectedItem(position);
                 }
             });
@@ -117,7 +119,6 @@ public class ItemHScrollView extends HorizontalScrollView {
             public void run() {
 //                setSelectedItem(0);
                 doIndicator(0);
-
             }
         }, 1000);
     }
@@ -164,6 +165,7 @@ public class ItemHScrollView extends HorizontalScrollView {
 
 
     public void touchDown() {
+        isFromUser = false;
         isMoving = false;
         isScrolling = false;
         isMovingB = false;

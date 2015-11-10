@@ -14,7 +14,6 @@ import android.graphics.drawable.TransitionDrawable;
 import android.util.LruCache;
 import android.widget.ImageView;
 
-import com.squareup.okhttp.internal.DiskLruCache;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,16 +22,20 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
 
 import sj.utils.FileUtils;
+import sj.utils.LogUtils;
 import sj.utils.MD5Util;
 
 /**
@@ -48,6 +51,7 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
     private Queue<ImageRef> requestQueue = new LinkedList<ImageRef>();
     private AsyncHandler mAsyncHandler;
     private boolean mImageLoaderIdle = true;
+
 
     private ImageLoader(Context context) {
         try {
@@ -65,6 +69,7 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
             }
         };
         mAsyncHandler = AsyncHandler.getInstance();
+        mAsyncHandler.setImpl(this, this);
     }
 
     public int getAppVersion(Context context) {
@@ -87,6 +92,8 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
     }
 
     public void displayImage(ImageView imageView, String url, int width, int height) {
+        if (url == null) return;
+        url = checkURL(url);
         String key = MD5Util.MD5(url);
         if (key == null) key = String.valueOf(key.hashCode());
         Bitmap bitmap = mMemoryCache.get(key);
@@ -96,6 +103,7 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
         }
         ImageRef ref = new ImageRef();
         ref.imageView = imageView;
+        ref.imageView.setTag(url);
         ref.url = url;
         ref.width = width;
         ref.height = height;
@@ -103,66 +111,95 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
         queueImage(ref);
     }
 
+    private String checkURL(String url) {
+        if (url.contains("/uploads/")) {
+            url = MURL.SERVER_URL + url;
+        }
+        return url;
+    }
+
     /**
-     * Èë¶Ó£¬ºó½øÏÈ³ö
+     * å…¥é˜Ÿï¼Œåè¿›å…ˆå‡º
      *
      * @param imageRef
      */
     public void queueImage(ImageRef imageRef) {
 
-        //°ÑÔÚ¶ÓÁĞÖĞµÄ£¬·Åµ½¶ÓÁĞ×îÉÏÃæ£¬ÓÅÏÈÏÔÊ¾
+        //æŠŠåœ¨é˜Ÿåˆ—ä¸­çš„ï¼Œæ”¾åˆ°é˜Ÿåˆ—æœ€ä¸Šé¢ï¼Œä¼˜å…ˆæ˜¾ç¤º
         Iterator<ImageRef> iterator = displayQueue.iterator();
         while (iterator.hasNext()) {
             if (iterator.next().imageView == imageRef.imageView) {
                 iterator.remove();
             }
         }
-
-        // Ìí¼ÓÇëÇó
+        // æ·»åŠ è¯·æ±‚
         displayQueue.push(imageRef);
-        requestNext();
+        if (mImageLoaderIdle) {
+            mImageLoaderIdle = false;
+            requestNext();
+        }
     }
 
     private void requestNext() {
+        if (displayQueue.size() == 0) return;
         ImageRef ref = displayQueue.pop();
         if (ref != null) {
             requestQueue.add(ref);
         }
-        if (mImageLoaderIdle && requestQueue.size() > 0) {
-            mAsyncHandler.handle(this, this);
+        if (requestQueue.size() > 0) {
+            mAsyncHandler.handle();
         }
     }
 
     @Override
     public void onCallback(Object object) {
         ImageRef imageRef = requestQueue.poll();
-        if (object instanceof Bitmap) {
-            Bitmap bitmap = (Bitmap) object;
-            if (bitmap != null) {
-                setImageBitmap(imageRef.imageView, bitmap, true);
-                mMemoryCache.put(imageRef.key, bitmap);
+        if (imageRef != null) {
+            if (object instanceof Bitmap) {
+                Bitmap bitmap = (Bitmap) object;
+                if (bitmap != null) {
+                    if (imageRef.imageView.getTag().equals(imageRef.url))
+                        setImageBitmap(imageRef.imageView, bitmap, true);
+                    mMemoryCache.put(imageRef.key, bitmap);
+                }
             }
         }
-        if (mImageLoaderIdle)
-            requestNext();
+        mImageLoaderIdle = true;
+        requestNext();
     }
 
     @Override
     public Object work() {
         Bitmap bitmap;
         ImageRef imageRef = requestQueue.peek();
+        if (imageRef == null) return null;
         String url = imageRef.url;
         bitmap = readBitmapFromDirk(imageRef.key);
+
         if (bitmap != null) {
             return bitmap;
         }
-
         if (url == null) return null;
-        // Èç¹û±¾µØurl¼´¶ÁÈ¡sdÏà²áÍ¼Æ¬£¬ÔòÖ±½Ó¶ÁÈ¡£¬²»ÓÃ¾­¹ıDiskCache
+        // å¦‚æœæœ¬åœ°urlå³è¯»å–sdç›¸å†Œå›¾ç‰‡ï¼Œåˆ™ç›´æ¥è¯»å–ï¼Œä¸ç”¨ç»è¿‡DiskCache
         if (url.toLowerCase().contains("dcim")) {
         } else {
-            InputStream inputStream = load(url);
-            bitmap = BitmapFactory.decodeStream(inputStream);
+            DiskLruCache.Editor editor = null;
+            try {
+                editor = mDiskLruCache.edit(imageRef.key);
+                if (editor != null) {
+                    OutputStream outputStream = editor.newOutputStream(0);
+                    if (downloadUrlToStream(url, outputStream)) {
+                        editor.commit();
+                    } else {
+                        editor.abort();
+                    }
+                }
+                mDiskLruCache.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            bitmap = readBitmapFromDirk(imageRef.key);
+            return bitmap;
         }
         return null;
     }
@@ -182,44 +219,47 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
     }
 
     private boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
-//        HttpURLConnection urlConnection = null;
-//        BufferedOutputStream out = null;
-//        BufferedInputStream in = null;
-//        try {
-//            final URL url = new URL(urlString);
-//            urlConnection = (HttpURLConnection) url.openConnection();
-//            in = new BufferedInputStream(urlConnection.getInputStream(), 8 * 1024);
-//            out = new BufferedOutputStream(outputStream, 8 * 1024);
-//            int b;
-//            while ((b = in.read()) != -1) {
-//                out.write(b);
-//            }
-//            return true;
-//        } catch (final IOException e) {
-//            e.printStackTrace();
-//        } finally {
-//            if (urlConnection != null) {
-//                urlConnection.disconnect();
-//            }
-//            try {
-//                if (out != null) {
-//                    out.close();
-//                }
-//                if (in != null) {
-//                    in.close();
-//                }
-//            } catch (final IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        HttpURLConnection urlConnection = null;
+        BufferedOutputStream out = null;
+        BufferedInputStream in = null;
+        try {
+            final URL url = new URL(urlString);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            in = new BufferedInputStream(urlConnection.getInputStream(), 8 * 1024);
+            out = new BufferedOutputStream(outputStream, 8 * 1024);
+            int b;
+            while ((b = in.read()) != -1) {
+                out.write(b);
+            }
+
+            return true;
+        } catch (final IOException e) {
+            e.printStackTrace();
+            LogUtils.D("IOException " + e.getMessage());
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            try {
+                if (out != null) {
+                    out.close();
+                }
+                if (in != null) {
+                    in.close();
+                }
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
         return false;
     }
 
     /**
-     * Ìí¼ÓÍ¼Æ¬ÏÔÊ¾½¥ÏÖ¶¯»­
+     * æ·»åŠ å›¾ç‰‡æ˜¾ç¤ºæ¸ç°åŠ¨ç”»
      */
     private void setImageBitmap(ImageView imageView, Bitmap bitmap,
                                 boolean isTran) {
+        LogUtils.D("setImageBitmap..."+imageView.hashCode());
         if (isTran) {
             final TransitionDrawable td = new TransitionDrawable(
                     new Drawable[]{
@@ -247,25 +287,24 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
         } catch (Exception e) {
             return null;
         }
-
     }
 
     /**
-     * ¸ù¾İurlÉú³É»º´æÎÄ¼şÍêÕûÂ·¾¶Ãû
+     * æ ¹æ®urlç”Ÿæˆç¼“å­˜æ–‡ä»¶å®Œæ•´è·¯å¾„å
      *
      * @param url
      * @return
      */
     public String urlToFilePath(String url) {
-        // À©Õ¹ÃûÎ»ÖÃ
+        // æ‰©å±•åä½ç½®
         int index = url.lastIndexOf('.');
         if (index == -1) {
             return null;
         }
         StringBuilder filePath = new StringBuilder();
-        // Í¼Æ¬´æÈ¡Â·¾¶
+        // å›¾ç‰‡å­˜å–è·¯å¾„
         filePath.append(myapp.getCacheDir().toString()).append('/');
-        // Í¼Æ¬ÎÄ¼şÃû
+        // å›¾ç‰‡æ–‡ä»¶å
         filePath.append(MD5Util.MD5(url)).append(url.substring(index));
 
         return filePath.toString();

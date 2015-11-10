@@ -42,7 +42,7 @@ public class MyApplication extends Application {
         this.shutdownHttpClient();
     }
 
-    // 创建HttpClient实例
+    // 鍒涘缓HttpClient瀹炰緥
     private HttpClient createHttpClient() {
         HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
@@ -62,14 +62,14 @@ public class MyApplication extends Application {
         return new DefaultHttpClient(connMgr, params);
     }
 
-    // 关闭连接管理器并释放资源
+    // 鍏抽棴杩炴帴绠＄悊鍣ㄥ苟閲婃斁璧勬簮
     private void shutdownHttpClient() {
         if (httpClient != null && httpClient.getConnectionManager() != null) {
             httpClient.getConnectionManager().shutdown();
         }
     }
 
-    // 对外提供HttpClient实例
+    // 瀵瑰鎻愪緵HttpClient瀹炰緥
     public HttpClient getHttpClient() {
         return httpClient;
     }

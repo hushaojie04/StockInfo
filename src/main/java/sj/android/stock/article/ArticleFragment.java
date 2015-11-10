@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import sj.android.stock.Cache;
 import sj.android.stock.MyFragmentPagerAdapter;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
@@ -36,6 +37,7 @@ import sj.http.NetworkDispatcher;
 import sj.http.Request;
 import sj.http.Response;
 import sj.utils.LogUtils;
+import sj.utils.MD5Util;
 
 /**
  * Created by Administrator on 2015/10/22.
@@ -57,8 +59,18 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getURL());
         request.params.add(new BasicNameValuePair("arttype", "0"));
         requestIds.put("type", request.getId());
-        request.setListener(this);
-        dispatcher.dispatch(request);
+
+        String cache = Cache.from(getActivity()).getData(MD5Util.MD5(request.getWholeURL()));
+        if (cache != null && !cache.equals("")) {
+            try {
+                handleType(new JSONArray(cache));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            request.setListener(this);
+            dispatcher.dispatch(request);
+        }
         return root;
     }
 
@@ -124,7 +136,7 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
 
             @Override
             public void onPageSelected(int position) {
-                LogUtils.D("onPageSelected "+position);
+                LogUtils.D("onPageSelected " + position);
                 mItemHScrollView.setSelectedItem(position);
                 lastOffset = 0;
             }
@@ -160,20 +172,20 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
 
     @Override
     public void onResponse(Request<JSONArray> request, Response<JSONArray> response) {
+        if (response.result == null) return;
+        Cache.from(getActivity()).save(MD5Util.MD5(request.getWholeURL()), response.result.toString());
         if (request.getId() == requestIds.get("type")) {
-            handleType(response);
+            handleType(response.result);
         }
-
     }
 
-    private void handleType(Response<JSONArray> response) {
-        if (response.result == null) return;
+    private void handleType(JSONArray result) {
 //        LogUtils.D(response.result.toString());
         fragmentList = new ArrayList<Fragment>();
-        String[] typenames = new String[response.result.length()];
-        for (int i = 0; i < response.result.length(); i++) {
+        String[] typenames = new String[result.length()];
+        for (int i = 0; i < result.length(); i++) {
             try {
-                JSONObject jsonObject = (JSONObject) response.result.get(i);
+                JSONObject jsonObject = (JSONObject) result.get(i);
                 int typeid = jsonObject.getInt("ID");
                 String typename = jsonObject.getString("typename");
                 fragmentList.add(new ArticleListFragment(typeid, typename, i));

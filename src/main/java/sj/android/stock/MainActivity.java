@@ -36,6 +36,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ImageLoader.from(this);
+        Cache.from(this);
         rootView = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(R.layout.activity_main);
         initHead();

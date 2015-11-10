@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import sj.android.stock.ImageLoader;
 import sj.android.stock.R;
 
 /**
@@ -55,6 +56,7 @@ public class ArticleListAdapter extends BaseAdapter {
             holder.title.setText(articleInfoList.get(position).title);
         if (!articleInfoList.get(position).description.equals(""))
             holder.description.setText(articleInfoList.get(position).description);
+        ImageLoader.from(parent.getContext()).displayImage(holder.pic, articleInfoList.get(position).litpic, 100, 100);
         return convertView;
     }
 

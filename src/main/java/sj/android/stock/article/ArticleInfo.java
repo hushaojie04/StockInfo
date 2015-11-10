@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
+import sj.utils.LogUtils;
+
 /**
  * Created by Administrator on 2015/11/1.
  */
@@ -29,11 +31,14 @@ public class ArticleInfo implements Serializable {
             shorttitle = jsonObject.getString("shorttitle");
             writer = jsonObject.getString("writer");
             description = jsonObject.getString("description");
-            flag = jsonObject.getString("flag");
-            postnum = jsonObject.getInt("postnum");
+//            flag = jsonObject.getString("flag");
+//            postnum = jsonObject.getInt("postnum");
             litpic = jsonObject.getString("litpic");
+
         } catch (JSONException e) {
             e.printStackTrace();
+            LogUtils.D("JSONException "+e.getMessage());
+
         }
     }
 
