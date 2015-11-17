@@ -20,6 +20,7 @@ import sj.android.stock.fragment.FindFragment;
 import sj.android.stock.fragment.MessageFragment;
 import sj.android.stock.fragment.MyFragment;
 import sj.android.stock.view.FragmentTabHost;
+import sj.utils.FileUtils;
 
 public class MainActivity extends FragmentActivity {
     private ViewPager vp;
@@ -37,6 +38,7 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ImageLoader.from(this);
+        FileUtils.mContext = this;
         Cache.from(this);
         rootView = getLayoutInflater().inflate(R.layout.activity_main, null);
         setContentView(R.layout.activity_main);
@@ -74,7 +76,7 @@ public class MainActivity extends FragmentActivity {
         params.height = ScreenAdapter.getInstance(this).getHeadHeight();
         titlebar.requestLayout();
         titleView = (TextView) findViewById(R.id.title);
-        searchBtn= (ImageButton) findViewById(R.id.searchBtn);
+        searchBtn = (ImageButton) findViewById(R.id.searchBtn);
     }
 
     public void updateTitle(String title, boolean isShowSearch) {

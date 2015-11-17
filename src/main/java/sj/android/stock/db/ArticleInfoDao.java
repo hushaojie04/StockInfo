@@ -10,20 +10,20 @@ import sj.utils.LogUtils;
 /**
  * Created by Administrator on 2015/11/3.
  */
-public class ArticleBodyDao {
+public class ArticleInfoDao {
     DBHelper helper = null;
 
-    public ArticleBodyDao(Context context) {
+    public ArticleInfoDao(Context context) {
         helper = new DBHelper(context);
     }
 
-    public void insertData(ArticleInfo info, String body,String url) {
-        String sql = "insert into addonarticle (aid,typeid,body,url)values(?,?,?,?)";
+    public void insertData(ArticleInfo info, String articleinfo) {
+        String sql = "insert into archives (aid,typeid,articleinfo)values(?,?,?)";
         SQLiteDatabase db = helper.getWritableDatabase();
-        db.execSQL(sql, new Object[]{info.id, info.typeid, body,url});
+        db.execSQL(sql, new Object[]{info.id, info.typeid, articleinfo});
     }
 
-    public String query(ArticleInfo info) {
+    public String query(ArticleInfo info,String start,String end) {
         String result = "";
         SQLiteDatabase db = helper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select body,url from addonarticle where aid=" + info.id + " and typeid=" + info.typeid,

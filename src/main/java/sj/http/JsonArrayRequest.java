@@ -25,6 +25,10 @@ public class JsonArrayRequest extends ObjectRequest<JSONArray> {
     public void postRequest() {
         try {
             String request = mHttpClientConn.performRequest(this, false);
+            if (request.equals("null")) {
+                response.result = null;
+                return;
+            }
             mJSONArray = new JSONArray(request);
             response.result = mJSONArray;
         } catch (IOException e) {

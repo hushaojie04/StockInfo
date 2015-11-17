@@ -215,7 +215,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         setArticleInfo(mArticleInfo);
         String body = mArticleBodyDao.query(mArticleInfo);
         if (body == null || body.equals("")) {
-            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
             request.setListener(this);
             dispatcher.dispatch(request);
         } else {

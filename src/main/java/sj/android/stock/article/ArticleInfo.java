@@ -34,12 +34,14 @@ public class ArticleInfo implements Serializable {
 //            flag = jsonObject.getString("flag");
 //            postnum = jsonObject.getInt("postnum");
             litpic = jsonObject.getString("litpic");
-
         } catch (JSONException e) {
             e.printStackTrace();
-            LogUtils.D("JSONException "+e.getMessage());
-
+            LogUtils.D("JSONException " + e.getMessage());
         }
     }
 
+    @Override
+    public String toString() {
+        return id + " " + typeid + " " + title + " ";
+    }
 }

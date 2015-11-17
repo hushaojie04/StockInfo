@@ -12,6 +12,7 @@ import java.util.List;
 
 import sj.android.stock.ImageLoader;
 import sj.android.stock.R;
+import sj.utils.LogUtils;
 
 /**
  * Created by Administrator on 2015/10/29.

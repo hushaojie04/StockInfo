@@ -22,6 +22,8 @@ import java.util.List;
 import sj.android.stock.Cache;
 import sj.android.stock.R;
 import sj.android.stock.MURL;
+import sj.android.stock.memento.Caretaker;
+import sj.android.stock.memento.Originator;
 import sj.http.JsonArrayRequest;
 import sj.http.NetworkDispatcher;
 import sj.http.Request;
@@ -38,21 +40,25 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     String typeName;
     private ArrayList<String> items = new ArrayList<String>();
     private static int refreshCnt = 0;
-    private int typeId = 0;
+    private int arctype = 0;
     NetworkDispatcher dispatcher;
     private List<ArticleInfo> articleInfoList = new ArrayList<ArticleInfo>();
     public int position;
     public static final int NUM = 10;
+    private boolean isRefresh = false;
+    private boolean isLoadAndRefresh = false;
+    private Originator mOriginator;
+    private String mementoKey;
 
     public ArticleListFragment(int typeId, String typeName, int position) {
         super();
         this.typeName = typeName;
-        this.typeId = typeId;
+        this.arctype = typeId;
         this.position = position;
         dispatcher = new NetworkDispatcher(new Handler());
-//        geneItems();
-//        if (position == 0)
-//            load(0, NUM, true);
+        mOriginator = new Originator();
+        mementoKey = MD5Util.MD5("arctype" + arctype);
+        isLoadAndRefresh = false;
         LogUtils.D("############ArticleListFragment###########" + typeName);
     }
 
@@ -61,13 +67,14 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     private void onLoad() {
         mListView.stopRefresh();
         mListView.stopLoadMore();
-        mListView.setRefreshTime("�ո�");
+        mListView.setRefreshTime("");
     }
 
     ArticleListAdapter articleListAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mOriginator.restoreMemento(Caretaker.getInstance().getMemento(mementoKey));
         View root = inflater.inflate(R.layout.fg_news_list, null);
         mListView = (XListView) root.findViewById(R.id.acticleListView);
         mListView.setPullLoadEnable(true);
@@ -99,7 +106,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             }
         });
         if (articleInfoList.size() == 0)
-            load(0, NUM, true);
+            load(0, NUM, true, "oncreate");
         else {
             articleListAdapter = new ArticleListAdapter(articleInfoList);
             mListView.setAdapter(articleListAdapter);
@@ -108,30 +115,44 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     }
 
     int requestid = -1;
-    boolean isReflesh;
 
-    private void load(int start, int end, boolean reflesh) {
+    private void load(int start, int num, boolean isReflesh, String tag) {
+        LogUtils.D("uuu", "handle tag " + tag);
         if (requestid != -1) return;
-        isReflesh = reflesh;
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getURL());
-        request.params.add(new BasicNameValuePair("arttype", "" + typeId));
-        request.params.add(new BasicNameValuePair("start", "" + start));
-        request.params.add(new BasicNameValuePair("end", "" + end));
-        request.setListener(this);
-//        requestid = request.getId();
-//        dispatcher.dispatch(request);
-        String cache = Cache.from(getActivity()).getData(MD5Util.MD5(request.getWholeURL()));
-        if (cache != null && !cache.equals("")) {
-            try {
-                handle(new JSONArray(cache));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } else {
-            request.setListener(this);
-            dispatcher.dispatch(request);
+        this.isRefresh = isReflesh;
+        if (isReflesh) {
+            isLoadAndRefresh = true;
         }
-        LogUtils.D("load " + requestid + " " + typeName + " " + typeId);
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL());
+        request.params.add(new BasicNameValuePair("arttype", "" + arctype));
+        request.params.add(new BasicNameValuePair("start", "" + start));
+        request.params.add(new BasicNameValuePair("end", "" + num));
+        request.setListener(this);
+        LogUtils.D("start-num:" + start + " " + num);
+        LogUtils.D("mOriginator.isContain(start):" + mOriginator.isContain(start));
+        if (!mOriginator.isEmpty() && mOriginator.isContain(start)) {
+            ArticleInfo[] articleInfos = mOriginator.get(start, start + num);
+            if (articleInfos != null) {
+                LogUtils.D("articleInfos len:" + articleInfos[0].toString());
+                handle(articleInfos);
+                return;
+            }
+        }
+        request.setListener(this);
+        dispatcher.dispatch(request);
+        LogUtils.D("load " + requestid + " " + typeName + " " + arctype);
+    }
+
+    private void refresh(int arctype, int aid, int typeid) {
+        if (requestid != -1) return;
+        isRefresh = true;
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getRefreshURL());
+        request.params.add(new BasicNameValuePair("arttype", "" + arctype));
+        request.params.add(new BasicNameValuePair("aid", "" + aid));
+        request.params.add(new BasicNameValuePair("typeid", "" + typeid));
+        request.setListener(this);
+        dispatcher.dispatch(request);
+        LogUtils.D("refresh " + requestid + " " + typeName + " " + arctype);
     }
 
     public void setText(String string) {
@@ -141,25 +162,33 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", typeId + " onResume " + " " + " " + this.getClass().getSimpleName());
+        Log.d("log", arctype + " onResume " + " " + " " + this.getClass().getSimpleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("log", typeId + " onPause " + this.getClass().getSimpleName());
+        Log.d("log", arctype + " onPause " + this.getClass().getSimpleName());
+        Caretaker.getInstance().setMemento(mementoKey, mOriginator.createMemento());
     }
 
 
     @Override
     public void onRefresh() {
+        check();
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                load(0, NUM, true);
+                refresh(arctype, articleInfoList.get(1).id, articleInfoList.get(1).typeid);
                 onLoad();
             }
         }, 800);
+    }
+
+    private void check() {
+        if (!articleInfoList.get(0).equals(mOriginator.getDataQueue().getFirst())) {
+            LogUtils.D("##########check############error");
+        }
     }
 
     @Override
@@ -168,7 +197,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                load(articleInfoList.size(), NUM, false);
+                load(articleInfoList.size(), NUM, false, "onLoadMore");
                 onLoad();
             }
         }, 800);
@@ -182,17 +211,20 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         if (requestid == request.getId()) requestid = -1;
         if (response.result == null) return;
         LogUtils.D("onResponse " + requestid + " " + typeName);
-        Cache.from(getActivity()).save(MD5Util.MD5(request.getWholeURL()), response.result.toString());
         handle(response.result);
+        if (isLoadAndRefresh) {
+            refresh(arctype, articleInfoList.get(0).id, articleInfoList.get(0).typeid);
+        }
+        isRefresh = false;
     }
 
     private void handle(JSONArray result) {
-        if (isReflesh) {
-            articleInfoList.clear();
-        }
         if (result.length() == 0) {
             isLoadNothing = true;
+            return;
         }
+        LogUtils.D("handle result length=" + result.length());
+        List<ArticleInfo> temp = new ArrayList<ArticleInfo>();
         for (int i = 0; i < result.length(); i++) {
             ArticleInfo info = new ArticleInfo();
             try {
@@ -200,10 +232,30 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            articleInfoList.add(info);
+            temp.add(info);
         }
+        if (isRefresh && mListView != null) {
+            mOriginator.addFirstAll(temp);
+            //增加到articleInfoList的头部
+            temp.addAll(articleInfoList);
+            articleInfoList.clear();
+            articleInfoList.addAll(temp);
+            articleListAdapter = new ArticleListAdapter(articleInfoList);
+            mListView.setAdapter(articleListAdapter);
+        } else {
+            articleInfoList.addAll(temp);
+            mOriginator.addLastAll(temp);
+            if (articleListAdapter != null)
+                articleListAdapter.notifyDataSetChanged();
+        }
+    }
 
-        if (isReflesh && mListView != null) {
+    private void handle(ArticleInfo[] result) {
+        LogUtils.D("uuu", "handle result " + result.length);
+        for (int i = 0; i < result.length; i++) {
+            articleInfoList.add(result[i]);
+        }
+        if (isRefresh && mListView != null) {
             articleListAdapter = new ArticleListAdapter(articleInfoList);
             mListView.setAdapter(articleListAdapter);
         } else {

@@ -56,7 +56,7 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
         initScrollView(root);
         initViewPager(root);
         dispatcher = new NetworkDispatcher(new Handler());
-        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getURL());
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL());
         request.params.add(new BasicNameValuePair("arttype", "0"));
         requestIds.put("type", request.getId());
 
