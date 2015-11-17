@@ -169,6 +169,7 @@ public class ItemHScrollView extends HorizontalScrollView {
         isMoving = false;
         isScrolling = false;
         isMovingB = false;
+        if (adapter == null) return;
         if (currentPosition < adapter.getCount() - 1) {
             nextX = Row.getChildAt(currentPosition + 1).getX();
         }

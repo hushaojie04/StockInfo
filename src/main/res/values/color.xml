@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <drawable name="color_btn_nor">#0f1223</drawable>
+    <drawable name="color_btn_down">#3648ae</drawable>
+
+
+    <color name="color_text_1">#ff6633</color>
+    <color name="color_text_3">#f52631</color>
+    <color name="color_level_poorer">#ff0000</color>
+    <color name="color_text_4">#ff0000</color>
+    <color name="color_text_5">#00bcd4</color>
+    <color name="color_text_6">#d0d0d0</color>
+    <color name="color_white">#ffffff</color>
+    <color name="color_black">#000000</color>
+
+    <color name="color_level_A">#66cc33</color>
+    <color name="color_level_B">#00bcd4</color>
+    <color name="color_level_C">#ff9900</color>
+    <color name="color_level_D">#ff0000</color>
+
+    <color name="dialog_confirm_text_down">#fe6522</color>
+    <color name="dialog_confirm_text_nor">#999999</color>
+    <color name="dialog_confirm_bg_down">#ffefe8</color>
+    <color name="dialog_confirm_bg_nor">#f5f5f5</color>
+
+    //theme1
+    <color name="theme1_head_bg">#3f51b5</color>
+    <color name="theme1_tail_bg">#ffffff</color>
+    <color name="theme1_content_bg">#f6f6f6</color>
+    <color name="theme1_content_fg">#ffffff</color>
+    <color name="theme1_content_fg_airatate">#eaeaea</color>
+    <color name="theme1_content_row_text">#666666</color>
+    <color name="theme1_content_airatate_value_text_color">#333333</color>
+
+    <color name="theme1_dialog_text_body_title_color">#000000</color>
+    <color name="theme1_dialog_text_btn_bg_color_down">#0087c7</color>
+    <color name="theme1_dialog_text_btn_bg_color_nor">#9a9a9a</color>
+    <color name="theme1_dialog_text_btn_title_color_down">#dddddd</color>
+    <color name="theme1_dialog_text_btn_title_color_nor">#545253</color>
+    //theme2
+    <color name="theme2_head_bg">#676767</color>
+    <color name="theme2_tail_bg">#ffffff</color>
+
+    //theme3
+    <color name="theme3_head_bg">#1b2b3b</color>
+    <color name="theme3_tail_bg">#232428</color>
+    <color name="theme3_content_fg">#263e50</color>
+    <color name="theme3_content_fg_airatate">#263e50</color>
+    <color name="theme3_content_row_text">#dddddd</color>
+    <color name="theme3_content_airatate_value_text_color">#dddddd</color>
+
+    <color name="theme3_dialog_text_body_title_color">#dddddd</color>
+    <color name="theme3_dialog_text_btn_bg_color_down">#0087c7</color>
+    <color name="theme3_dialog_text_btn_bg_color_nor">#9a9a9a</color>
+    <color name="theme3_dialog_text_btn_title_color_down">#dddddd</color>
+    <color name="theme3_dialog_text_btn_title_color_nor">#545253</color>
+</resources>

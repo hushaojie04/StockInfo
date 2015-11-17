@@ -1,0 +1,9 @@
+<resources>
+    <item name="about" type="id" />
+    <item name="accountinfo" type="id" />
+    <item name="version" type="id" />
+    <item name="setting" type="id" />
+    <item name="mywatchlist" type="id" />
+    <item name="favourites" type="id" />
+    <item name="feedback" type="id" />
+</resources>

@@ -23,4 +23,11 @@
     <string name="original">头条</string>
     <string name="reprint">转载</string>
     <string name="publish">发表于</string>
+
+    <string name="account_info">账号信息</string>
+    <string name="mywatchlist">我的关注</string>
+    <string name="favourites">我的收藏</string>
+    <string name="feedback">意见反馈</string>
+    <string name="setting">设置</string>
+
 </resources>

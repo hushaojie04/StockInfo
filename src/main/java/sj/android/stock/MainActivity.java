@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import sj.android.stock.article.ArticleFragment;
 import sj.android.stock.fragment.FindFragment;
 import sj.android.stock.fragment.MessageFragment;
-import sj.android.stock.fragment.MyFragment;
+import sj.android.stock.mine.MyFragment;
 import sj.android.stock.view.FragmentTabHost;
 import sj.utils.FileUtils;
 
