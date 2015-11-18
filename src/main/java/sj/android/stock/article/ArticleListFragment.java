@@ -179,7 +179,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                refresh(arctype, articleInfoList.get(1).id, articleInfoList.get(1).typeid);
+                refresh(arctype, articleInfoList.get(0).id, articleInfoList.get(0).typeid);
                 onLoad();
             }
         }, 800);
