@@ -66,6 +66,14 @@
                 android:textColor="@android:color/darker_gray" />
         </LinearLayout>
 
+        <WebView
+            android:id="@+id/bodyWebView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp" />
+
         <LinearLayout
             android:id="@+id/videoLayout"
             android:layout_width="match_parent"

@@ -179,14 +179,15 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mListView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                refresh(arctype, articleInfoList.get(0).id, articleInfoList.get(0).typeid);
+                if (articleInfoList.size() > 0)
+                    refresh(arctype, articleInfoList.get(0).id, articleInfoList.get(0).typeid);
                 onLoad();
             }
         }, 800);
     }
 
     private void check() {
-        if (!articleInfoList.get(0).equals(mOriginator.getDataQueue().getFirst())) {
+        if (articleInfoList.size() > 0 && !articleInfoList.get(0).equals(mOriginator.getDataQueue().getFirst())) {
             LogUtils.D("##########check############error");
         }
     }
@@ -212,7 +213,7 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         if (response.result == null) return;
         LogUtils.D("onResponse " + requestid + " " + typeName);
         handle(response.result);
-        if (isLoadAndRefresh) {
+        if (isLoadAndRefresh && articleInfoList.size() > 0) {
             refresh(arctype, articleInfoList.get(0).id, articleInfoList.get(0).typeid);
         }
         isRefresh = false;

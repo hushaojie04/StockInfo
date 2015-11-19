@@ -1,8 +1,10 @@
 package sj.android.stock.article;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextPaint;
@@ -11,6 +13,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.JsPromptResult;
+import android.webkit.JsResult;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -18,11 +22,15 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
+import sj.android.stock.Cache;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
 import sj.android.stock.MURL;
@@ -31,6 +39,7 @@ import sj.http.JsonArrayRequest;
 import sj.http.NetworkDispatcher;
 import sj.http.Request;
 import sj.http.Response;
+import sj.utils.FileUtils;
 import sj.utils.LogUtils;
 import sj.utils.StringUtils;
 
@@ -38,7 +47,7 @@ import sj.utils.StringUtils;
  * Created by Administrator on 2015/11/1.
  */
 public class BodyActivity extends Activity implements Response.Listener<JSONArray> {
-    WebView mWebView;
+    WebView mWebView, bodyWebView;
     ArticleInfo mArticleInfo;
     NetworkDispatcher dispatcher;
     ArticleBodyDao mArticleBodyDao;
@@ -116,6 +125,90 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
     }
 
     private void initWebView() {
+        //body
+        bodyWebView = (WebView) findViewById(R.id.bodyWebView);
+        bodyWebView.getSettings().setJavaScriptEnabled(true);
+        bodyWebView.getSettings().setJavaScriptEnabled(true);
+        bodyWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        // 建议缓存策略为，判断是否有网络，有的话，使用LOAD_DEFAULT,无网络时，使用LOAD_CACHE_ELSE_NETWORK
+        bodyWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK); // 设置缓存模式
+        // 开启DOM storage API 功能
+        bodyWebView.getSettings().setDomStorageEnabled(true);
+        // 开启database storage API功能
+        bodyWebView.getSettings().setDatabaseEnabled(true);
+//        String cacheDirPath = FileUtils.getDiskCacheDir(this, "/webcache").getPath();
+//        LogUtils.D("cacheDirPath:" + cacheDirPath);
+//        // 设置数据库缓存路径
+//        bodyWebView.getSettings().setDatabasePath(cacheDirPath); // API 19 deprecated
+//        // 设置Application caches缓存目录
+//        bodyWebView.getSettings().setAppCachePath(cacheDirPath);
+        // 开启Application Cache功能
+        bodyWebView.getSettings().setAppCacheEnabled(true);
+        bodyWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onLoadResource(WebView view, String url) {
+                LogUtils.D("onLoadResource url=" + url);
+
+                super.onLoadResource(view, url);
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                LogUtils.D("intercept url=" + url);
+                view.loadUrl(url);
+                return true;
+            }
+
+            // 页面开始时调用
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                LogUtils.D("onPageStarted");
+                super.onPageStarted(view, url, favicon);
+            }
+
+            // 页面加载完成调用
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, int errorCode,
+                                        String description, String failingUrl) {
+                super.onReceivedError(view, errorCode, description, failingUrl);
+                Toast.makeText(getApplicationContext(), "", Toast.LENGTH_LONG)
+                        .show();
+            }
+        });
+
+        bodyWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message,
+                                     JsResult result) {
+                LogUtils.D("onJsAlert " + message);
+
+                Toast.makeText(getApplicationContext(), message,
+                        Toast.LENGTH_SHORT).show();
+                result.confirm();
+                return super.onJsAlert(view, url, message, result);
+            }
+
+            @Override
+            public boolean onJsConfirm(WebView view, String url,
+                                       String message, JsResult result) {
+                LogUtils.D("onJsConfirm " + message);
+                return super.onJsConfirm(view, url, message, result);
+            }
+
+            @Override
+            public boolean onJsPrompt(WebView view, String url, String message,
+                                      String defaultValue, JsPromptResult result) {
+                LogUtils.D("onJsPrompt " + url);
+                return super.onJsPrompt(view, url, message, defaultValue,
+                        result);
+            }
+        });
+        //video
         mWebView = (WebView) findViewById(R.id.webView);
         video_view = (FrameLayout) findViewById(R.id.video_view);
         WebSettings ws = mWebView.getSettings();
@@ -165,8 +258,41 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         titlebar.requestLayout();
     }
 
-    String base = "http://player.youku.com/embed/XXXXXXXX==?";
     String url = "";
+
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        processExtraData();
+    }
+
+    private void processExtraData() {
+        Intent intent = getIntent();
+        Bundle bundle = intent.getBundleExtra("info");
+        mArticleInfo = (ArticleInfo) bundle.get("info");
+        LogUtils.D("mArticleInfo.typeid:" + mArticleInfo.typeid);
+        LogUtils.D("mArticleInfo.id" + mArticleInfo.id);
+        setArticleInfo(mArticleInfo);
+        String[] result = mArticleBodyDao.query(mArticleInfo);
+        if (result != null) {
+            if (result[0] != null) {
+                mWebView.loadUrl(result[1]);
+            }
+            if (result[1] != null) {
+                String xx = "url://articleinfo/" + mArticleInfo.typeid + "/" + mArticleInfo.id;
+                String url = "file:///android_asset/index.html";
+                bodyWebView.loadUrl(url);
+//                bodyWebView.loadDataWithBaseURL("about:blank", result[0], "text/html", "UTF-8", null);
+//                bodyWebView.loadUrl("http://business.sohu.com/20151119/n427023850.shtml");
+            }
+        } else {
+            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
+            request.setListener(this);
+            dispatcher.dispatch(request);
+        }
+    }
 
     @Override
     public void onResponse(Request<JSONArray> request, Response<JSONArray> response) {
@@ -185,41 +311,27 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
                 id = body.substring(body.indexOf("VideoIDS=") + "VideoIDS=".length());
             }
             if (!id.equals("")) {
-                url = base.replace("XXXXXXXX", id);
+                url = MURL.YOUKU_PALYVIDEO.replace("XXXXXXXX", id);
             }
-            LogUtils.D("url#" + url);
             mWebView.loadUrl(url);
+            body = body.replaceAll("/uploads/", MURL.SERVER_URL + "/uploads/");
+//            List urlList = FileUtils.getImgStr(body);
+//            LogUtils.D("urlList.size#########" + urlList.size());
+//            for (int i = 0; i < urlList.size(); i++) {
+//                LogUtils.D("##url " + i + " " + urlList.get(i));
+//            }
 
-//            body = body.replaceAll("/uploads/", URL.HOST + "/uploads/");
-//            mArticleBodyDao.insertData(mArticleInfo, body, url);
-//            mWebView.loadDataWithBaseURL(url, body, "text/html", "UTF-8", "");
+            mArticleBodyDao.insertData(mArticleInfo, body, url);
+            String url = "file:///android_asset/index.html";
+            bodyWebView.loadUrl(url);
+
+//            bodyWebView.loadDataWithBaseURL(url, body, "text/html", "UTF-8", null);
+            //            bodyWebView.loadUrl("http://business.sohu.com/20151119/n427
+            // 023850.shtml");
+
         } catch (JSONException e) {
             e.printStackTrace();
             LogUtils.D("body#########" + e.getMessage());
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        processExtraData();
-    }
-
-    private void processExtraData() {
-        Intent intent = getIntent();
-        Bundle bundle = intent.getBundleExtra("info");
-        mArticleInfo = (ArticleInfo) bundle.get("info");
-        LogUtils.D("mArticleInfo.typeid:" + mArticleInfo.typeid);
-        LogUtils.D("mArticleInfo.id" + mArticleInfo.id);
-        setArticleInfo(mArticleInfo);
-        String body = mArticleBodyDao.query(mArticleInfo);
-        if (body == null || body.equals("")) {
-            JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
-            request.setListener(this);
-            dispatcher.dispatch(request);
-        } else {
-//            mWebView.loadDataWithBaseURL("", "http://player.youku.com/embed/XMTM3NTI3MjU2NA==?XMzEwOTk4ODE2&qq-pf-to=pcqq.c2c", "text/html", "UTF-8", "");
         }
     }
 
