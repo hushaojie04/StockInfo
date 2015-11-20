@@ -130,19 +130,9 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         bodyWebView.getSettings().setJavaScriptEnabled(true);
         bodyWebView.getSettings().setJavaScriptEnabled(true);
         bodyWebView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-        // 建议缓存策略为，判断是否有网络，有的话，使用LOAD_DEFAULT,无网络时，使用LOAD_CACHE_ELSE_NETWORK
         bodyWebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK); // 设置缓存模式
-        // 开启DOM storage API 功能
         bodyWebView.getSettings().setDomStorageEnabled(true);
-        // 开启database storage API功能
         bodyWebView.getSettings().setDatabaseEnabled(true);
-//        String cacheDirPath = FileUtils.getDiskCacheDir(this, "/webcache").getPath();
-//        LogUtils.D("cacheDirPath:" + cacheDirPath);
-//        // 设置数据库缓存路径
-//        bodyWebView.getSettings().setDatabasePath(cacheDirPath); // API 19 deprecated
-//        // 设置Application caches缓存目录
-//        bodyWebView.getSettings().setAppCachePath(cacheDirPath);
-        // 开启Application Cache功能
         bodyWebView.getSettings().setAppCacheEnabled(true);
         bodyWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -281,10 +271,10 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
                 mWebView.loadUrl(result[1]);
             }
             if (result[1] != null) {
-                String xx = "url://articleinfo/" + mArticleInfo.typeid + "/" + mArticleInfo.id;
-                String url = "file:///android_asset/index.html";
-                bodyWebView.loadUrl(url);
-//                bodyWebView.loadDataWithBaseURL("about:blank", result[0], "text/html", "UTF-8", null);
+//                String xx = "url://articleinfo/" + mArticleInfo.typeid + "/" + mArticleInfo.id;
+//                String url = "file:///android_asset/index.html";
+//                bodyWebView.loadUrl(url);
+                bodyWebView.loadDataWithBaseURL("about:blank", result[0], "text/html", "UTF-8", null);
 //                bodyWebView.loadUrl("http://business.sohu.com/20151119/n427023850.shtml");
             }
         } else {
@@ -322,10 +312,10 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
 //            }
 
             mArticleBodyDao.insertData(mArticleInfo, body, url);
-            String url = "file:///android_asset/index.html";
-            bodyWebView.loadUrl(url);
+//            String url = "file:///android_asset/index.html";
+//            bodyWebView.loadUrl(url);
 
-//            bodyWebView.loadDataWithBaseURL(url, body, "text/html", "UTF-8", null);
+            bodyWebView.loadDataWithBaseURL(url, body, "text/html", "UTF-8", null);
             //            bodyWebView.loadUrl("http://business.sohu.com/20151119/n427
             // 023850.shtml");
 
