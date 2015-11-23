@@ -15,6 +15,7 @@ import sj.utils.LogUtils;
 public class Originator {
     private ArrayDeque<ArticleInfo> queue = new ArrayDeque<ArticleInfo>();
     private String key;
+    private static final int MAX = 50;
 
     public ArrayDeque<ArticleInfo> getDataQueue() {
         return queue;
@@ -69,6 +70,9 @@ public class Originator {
             return;
         }
         this.queue.addAll(memento.getArrayDeque());
+        while (queue.size() > MAX) {
+                queue.pollLast();
+        }
         LogUtils.D("restoreMemento queue size  ==" + queue.size());
     }
 }

@@ -11,7 +11,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import sj.android.stock.MainActivity;
 import sj.android.stock.R;
+import sj.android.stock.fragment.LoginFragment;
 
 /**
  * Created by Administrator on 2015/10/22.
@@ -30,8 +32,11 @@ public class MyFragment extends Fragment {
         for (int i = 0; i < resimage.length; i++) {
             root.addView(newItem(resimage[i], restitle[i], resid[i]));
         }
+        activity = ((MainActivity) getActivity());
         return root;
     }
+
+    MainActivity activity;
 
     @Override
     public void onResume() {
@@ -60,7 +65,11 @@ public class MyFragment extends Fragment {
     class MyOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-
+            switch (v.getId()) {
+                case R.id.accountinfo:
+                    activity.showFg(new LoginFragment());
+                    break;
+            }
         }
     }
 

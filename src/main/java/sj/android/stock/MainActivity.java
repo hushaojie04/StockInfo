@@ -3,6 +3,7 @@ package sj.android.stock;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,6 @@ public class MainActivity extends FragmentActivity {
             }
         });
         mTabHost.setTabAdapter(this, mTabHost.new TabAdapter(fragmentList, mImageViewArray, mTextviewArray, R.layout.itemview));
-
     }
 
 
@@ -82,6 +82,29 @@ public class MainActivity extends FragmentActivity {
     public void updateTitle(String title, boolean isShowSearch) {
         titleView.setText(title);
         searchBtn.setVisibility(isShowSearch ? View.VISIBLE : View.INVISIBLE);
+    }
+
+
+    public void showFg(Fragment fragment) {
+        if (fragment != null) {
+            FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+            //前面两个动画是进来时Framgment的切换动画，后面两个是退出去时的切换动画
+//            transaction.setCustomAnimations(R.anim.move_left, R.anim.move_right, R.anim.move_left, R.anim.move_right);
+            transaction.add(R.id.fg_content, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+    }
+
+    public void dimissFg(Fragment fragment, boolean isNeedExitAnim) {
+        if (fragment != null) {
+            FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+//            if (isNeedExitAnim)
+//                transaction.setCustomAnimations(R.anim.move_left, R.anim.move_right, R.anim.move_left, R.anim.move_right);
+            transaction.hide(fragment);
+            transaction.detach(fragment);
+            transaction.commit();
+        }
     }
 
 }
