@@ -80,9 +80,9 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
             if (inCustomView()) {
                 hideCustomView();
                 return true;
+            } else {
+                mWebView.loadUrl("about:blank");
             }
-        } else {
-            mWebView.loadUrl("about:blank");
         }
         return super.onKeyDown(keyCode, event);
     }
