@@ -14,6 +14,7 @@ import android.widget.TextView;
 import sj.android.stock.MainActivity;
 import sj.android.stock.R;
 import sj.android.stock.fragment.LoginFragment;
+import sj.android.stock.fragment.SettingFragment;
 
 /**
  * Created by Administrator on 2015/10/22.
@@ -68,6 +69,9 @@ public class MyFragment extends Fragment {
             switch (v.getId()) {
                 case R.id.accountinfo:
                     activity.showFg(new LoginFragment());
+                    break;
+                case R.id.setting:
+                    activity.showFg(new SettingFragment());
                     break;
             }
         }

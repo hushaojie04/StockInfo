@@ -46,7 +46,7 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
     private static ImageLoader mImageLoader;
     private DiskLruCache mDiskLruCache;
     private LruCache<String, Bitmap> mMemoryCache;
-    private static final String DISK_CACHE_SUBDIR = "thumbnails";
+    public static final String DISK_CACHE_SUBDIR = "thumbnails";
     private Stack<ImageRef> displayQueue = new Stack<ImageRef>();
     private Queue<ImageRef> requestQueue = new LinkedList<ImageRef>();
     private AsyncHandler mAsyncHandler;
@@ -259,7 +259,7 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
      */
     private void setImageBitmap(ImageView imageView, Bitmap bitmap,
                                 boolean isTran) {
-        LogUtils.D("setImageBitmap..."+imageView.hashCode());
+        LogUtils.D("setImageBitmap..." + imageView.hashCode());
         if (isTran) {
             final TransitionDrawable td = new TransitionDrawable(
                     new Drawable[]{

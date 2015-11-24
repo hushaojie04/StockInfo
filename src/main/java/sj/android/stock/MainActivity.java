@@ -45,6 +45,7 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
         initHead();
         initView();
+        ToastManager.getManager().init(this);
     }
 
     /**
