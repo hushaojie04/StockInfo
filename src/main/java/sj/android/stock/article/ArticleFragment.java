@@ -30,6 +30,7 @@ import sj.android.stock.MyFragmentPagerAdapter;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
 import sj.android.stock.MURL;
+import sj.android.stock.ToastManager;
 import sj.android.stock.view.CatchTouchViewPager;
 import sj.android.stock.view.ItemHScrollView;
 import sj.http.JsonArrayRequest;
@@ -38,6 +39,7 @@ import sj.http.Request;
 import sj.http.Response;
 import sj.utils.LogUtils;
 import sj.utils.MD5Util;
+import sj.utils.NetUtils;
 
 /**
  * Created by Administrator on 2015/10/22.
@@ -68,8 +70,12 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
                 e.printStackTrace();
             }
         } else {
-            request.setListener(this);
-            dispatcher.dispatch(request);
+            if (NetUtils.isNetworkAvailable(getActivity())) {
+                request.setListener(this);
+                dispatcher.dispatch(request);
+            } else {
+                ToastManager.getManager().showToast(R.string.network_is_not_available);
+            }
         }
         return root;
     }

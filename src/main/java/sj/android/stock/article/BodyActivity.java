@@ -34,6 +34,7 @@ import sj.android.stock.Cache;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
 import sj.android.stock.MURL;
+import sj.android.stock.ToastManager;
 import sj.android.stock.db.ArticleBodyDao;
 import sj.http.JsonArrayRequest;
 import sj.http.NetworkDispatcher;
@@ -41,6 +42,7 @@ import sj.http.Request;
 import sj.http.Response;
 import sj.utils.FileUtils;
 import sj.utils.LogUtils;
+import sj.utils.NetUtils;
 import sj.utils.StringUtils;
 
 /**
@@ -279,8 +281,12 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
             }
         } else {
             JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
-            request.setListener(this);
-            dispatcher.dispatch(request);
+            if (NetUtils.isNetworkAvailable(this)) {
+                request.setListener(this);
+                dispatcher.dispatch(request);
+            } else {
+                ToastManager.getManager().showToast(R.string.network_is_not_available);
+            }
         }
     }
 

@@ -8,6 +8,7 @@
     <string name="message">消息</string>
     <string name="mine">我的</string>
     <string name="clear_success">清除成功</string>
+    <string name="network_is_not_available">网络不可用，请检查</string>
     <string name="xlistview_header_hint_normal">下拉刷新</string>
     <string name="xlistview_header_hint_ready">松开刷新数据</string>
     <string name="xlistview_header_hint_loading">正在加载...</string>

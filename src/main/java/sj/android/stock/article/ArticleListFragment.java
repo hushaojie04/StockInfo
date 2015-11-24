@@ -22,6 +22,7 @@ import java.util.List;
 import sj.android.stock.Cache;
 import sj.android.stock.R;
 import sj.android.stock.MURL;
+import sj.android.stock.ToastManager;
 import sj.android.stock.memento.Caretaker;
 import sj.android.stock.memento.Originator;
 import sj.http.JsonArrayRequest;
@@ -30,6 +31,7 @@ import sj.http.Request;
 import sj.http.Response;
 import sj.utils.LogUtils;
 import sj.utils.MD5Util;
+import sj.utils.NetUtils;
 import sj.xListview.XListView;
 
 /**
@@ -138,8 +140,12 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
                 return;
             }
         }
-        request.setListener(this);
-        dispatcher.dispatch(request);
+        if (NetUtils.isNetworkAvailable(getActivity())) {
+            request.setListener(this);
+            dispatcher.dispatch(request);
+        } else {
+            ToastManager.getManager().showToast(R.string.network_is_not_available);
+        }
         LogUtils.D("load " + requestid + " " + typeName + " " + arctype);
     }
 
@@ -150,8 +156,12 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         request.params.add(new BasicNameValuePair("arttype", "" + arctype));
         request.params.add(new BasicNameValuePair("aid", "" + aid));
         request.params.add(new BasicNameValuePair("typeid", "" + typeid));
-        request.setListener(this);
-        dispatcher.dispatch(request);
+        if (NetUtils.isNetworkAvailable(getActivity())) {
+            request.setListener(this);
+            dispatcher.dispatch(request);
+        } else {
+            ToastManager.getManager().showToast(R.string.network_is_not_available);
+        }
         LogUtils.D("refresh " + requestid + " " + typeName + " " + arctype);
     }
 
