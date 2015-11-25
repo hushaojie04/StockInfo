@@ -250,9 +250,6 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         titlebar.requestLayout();
     }
 
-    String url = "";
-
-
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -268,16 +265,18 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         LogUtils.D("mArticleInfo.id" + mArticleInfo.id);
         setArticleInfo(mArticleInfo);
         String[] result = mArticleBodyDao.query(mArticleInfo);
+        LogUtils.D("mArticleInfo.id" + mArticleInfo.id);
         if (result != null) {
             if (result[0] != null) {
-                mWebView.loadUrl(result[1]);
-            }
-            if (result[1] != null) {
-//                String xx = "url://articleinfo/" + mArticleInfo.typeid + "/" + mArticleInfo.id;
-//                String url = "file:///android_asset/index.html";
-//                bodyWebView.loadUrl(url);
                 bodyWebView.loadDataWithBaseURL("about:blank", result[0], "text/html", "UTF-8", null);
-//                bodyWebView.loadUrl("http://business.sohu.com/20151119/n427023850.shtml");
+            }
+            if (!result[1].equals("")) {
+                mWebView.loadUrl(MURL.YOUKU_PALYVIDEO.replace("XXXXXXXX", result[1]));
+                LogUtils.D(result[1]);
+            }
+            if (!result[2].equals("")) {
+                mWebView.loadUrl(MURL.QQ_PALYVIDEO.replace("XXXXXXXX", result[2]));
+                LogUtils.D(result[2]);
             }
         } else {
             JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL("aid=" + mArticleInfo.id + "&" + "typeid=" + mArticleInfo.typeid));
@@ -298,7 +297,11 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
             String body = jsonObject.getString("body");
             String flash = jsonObject.getString("flash");
             String shipin = jsonObject.getString("shipin");
+            String tx = jsonObject.getString("tx");
+
             String id = "";
+            String qq_url = "";
+            String you_url = "";
             if (!shipin.equals("")) {
                 id = shipin;
             } else if (flash.contains("player.youku.com")) {
@@ -306,10 +309,17 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
             } else if (body.contains("VideoIDS=")) {
                 id = body.substring(body.indexOf("VideoIDS=") + "VideoIDS=".length());
             }
-            if (!id.equals("")) {
-                url = MURL.YOUKU_PALYVIDEO.replace("XXXXXXXX", id);
+            mArticleBodyDao.insertData(mArticleInfo, body, id, tx);
+            if (!tx.equals("")) {
+                qq_url = MURL.QQ_PALYVIDEO.replace("XXXXXXXX", tx);
+                LogUtils.D("qq_url=" + qq_url);
+                mWebView.loadUrl(qq_url);
             }
-            mWebView.loadUrl(url);
+            if (!id.equals("")) {
+                you_url = MURL.YOUKU_PALYVIDEO.replace("XXXXXXXX", id);
+                LogUtils.D("youtu_url=" + you_url);
+                mWebView.loadUrl(you_url);
+            }
             body = body.replaceAll("/uploads/", MURL.SERVER_URL + "/uploads/");
 //            List urlList = FileUtils.getImgStr(body);
 //            LogUtils.D("urlList.size#########" + urlList.size());
@@ -317,11 +327,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
 //                LogUtils.D("##url " + i + " " + urlList.get(i));
 //            }
 
-            mArticleBodyDao.insertData(mArticleInfo, body, url);
-//            String url = "file:///android_asset/index.html";
-//            bodyWebView.loadUrl(url);
-
-            bodyWebView.loadDataWithBaseURL(url, body, "text/html", "UTF-8", null);
+            bodyWebView.loadDataWithBaseURL(you_url, body, "text/html", "UTF-8", null);
             //            bodyWebView.loadUrl("http://business.sohu.com/20151119/n427
             // 023850.shtml");
 

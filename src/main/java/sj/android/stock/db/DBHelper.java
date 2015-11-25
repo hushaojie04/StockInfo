@@ -34,7 +34,8 @@ public class DBHelper extends SQLiteOpenHelper {
                 "id integer primary key autoincrement," +
                 "aid int," +
                 "typeid int," +
-                "url text," +
+                "youku_url text," +
+                "qq_url text," +
                 "body text)";
         db.execSQL(sql);
         sql = "create table archives(" +
