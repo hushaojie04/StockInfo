@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public class FileUtils {
     public static Context mContext;
-    private final static String regxpForHtml = "<([^>]*)>"; // 过滤所有以<开头以>结尾的标签
+    private final static String regxpForHtml = "<([^>]*)>"; //  过滤所有以<开头以>结尾的标签
     private final static String regxpForImgTag = "<\\s*img\\s+([^>]*)\\s*>"; // 找出IMG标签
     private final static String regxpForImaTagSrcAttrib = "src=\"(\\s|\\S)*?\""; // 找出IMG标签的SRC属性
 
