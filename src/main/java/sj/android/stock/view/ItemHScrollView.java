@@ -3,6 +3,7 @@ package sj.android.stock.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,6 +98,7 @@ public class ItemHScrollView extends HorizontalScrollView {
             if (layoutParams == null) {
                 layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 //                layoutParams.setMargins(10, 0, 10, 0);
+                layoutParams.gravity = Gravity.CENTER_VERTICAL;
                 item.setLayoutParams(layoutParams);
             }
             item.requestLayout();

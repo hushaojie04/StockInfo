@@ -3,6 +3,7 @@ package sj.android.stock.article;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.apache.http.message.BasicNameValuePair;
@@ -55,13 +59,11 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fg_news, null);
-        initScrollView(root);
-        initViewPager(root);
+        initView(root);
         dispatcher = new NetworkDispatcher(new Handler());
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, MURL.getReadURL());
         request.params.add(new BasicNameValuePair("arttype", "0"));
         requestIds.put("type", request.getId());
-
         String cache = Cache.from(getActivity()).getData(MD5Util.MD5(request.getWholeURL()));
         if (cache != null && !cache.equals("")) {
             try {
@@ -80,10 +82,32 @@ public class ArticleFragment extends Fragment implements Response.Listener<JSONA
         return root;
     }
 
+    ImageView arrowicon;
+    View arrowiconParent;
+    int count = 0;
+
+    private void initView(View root) {
+        initScrollView(root);
+        initViewPager(root);
+        arrowiconParent = root.findViewById(R.id.arrowiconParent);
+        arrowicon = (ImageView) root.findViewById(R.id.arrowicon);
+        arrowiconParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int width = arrowicon.getMeasuredWidth();
+                int height = arrowicon.getMeasuredHeight();
+                LogUtils.D("onClick" + width + " " + height);
+                Matrix matrix = new Matrix();
+                matrix.postRotate(180 * count++, width / 2, height / 2);
+                arrowicon.setImageMatrix(matrix);
+            }
+        });
+    }
+
     private void initScrollView(View root) {
         mItemHScrollView = (ItemHScrollView) root.findViewById(R.id.typeTab);
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mItemHScrollView.getLayoutParams();
-        params.height = ScreenAdapter.getInstance(null).getHeadHeight() / 2;
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mItemHScrollView.getLayoutParams();
+        params.height = (int) (ScreenAdapter.getInstance(null).getHeadHeight() *0.7f);
         mItemHScrollView.requestLayout();
         mItemHScrollView.setPositionOffset(0);
         mItemHScrollView.setOnItemClickListener(new ItemHScrollView.OnItemClickListener() {

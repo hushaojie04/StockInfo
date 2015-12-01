@@ -214,6 +214,7 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
         ws.setGeolocationEnabled(true);// 启用地理定位
         ws.setGeolocationDatabasePath("/data/data/webview/databases/");// 设置定位的数据库路径
         ws.setDomStorageEnabled(true);
+//        ws.setUserAgentString(MURL.IE8_USERAGENT);
         xwebchromeclient = new xWebChromeClient();
         mWebView.setWebChromeClient(xwebchromeclient);
         mWebView.setWebViewClient(new xWebViewClientent());
@@ -330,7 +331,6 @@ public class BodyActivity extends Activity implements Response.Listener<JSONArra
             bodyWebView.loadDataWithBaseURL(you_url, body, "text/html", "UTF-8", null);
             //            bodyWebView.loadUrl("http://business.sohu.com/20151119/n427
             // 023850.shtml");
-
         } catch (JSONException e) {
             e.printStackTrace();
             LogUtils.D("body#########" + e.getMessage());
