@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import sj.android.stock.article.ArticleFragment;
 import sj.android.stock.fragment.FindFragment;
@@ -34,6 +35,7 @@ public class MainActivity extends FragmentActivity {
     private FragmentTabHost mTabHost;
     private TextView titleView;
     private ImageButton searchBtn;
+    private ArrayList<ActivityHandle> mActivityHandles = new ArrayList<ActivityHandle>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +55,15 @@ public class MainActivity extends FragmentActivity {
      */
     private void initView() {
         ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
-        fragmentList.add(new ArticleFragment());
+        ArticleFragment articleFragment = new ArticleFragment();
+        mActivityHandles.add(articleFragment);
+        fragmentList.add(articleFragment);
         fragmentList.add(new FindFragment());
         fragmentList.add(new MessageFragment());
         fragmentList.add(new MyFragment());
-        layoutInflater = LayoutInflater.from(this);
 
+
+        layoutInflater = LayoutInflater.from(this);
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setTabcontent(android.R.id.tabcontent).setTabs(android.R.id.tabs);
         mTabHost.setOnItemClickListener(new FragmentTabHost.OnItemClickListener() {
@@ -108,4 +113,17 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Iterator<ActivityHandle> iterator = mActivityHandles.iterator();
+        while (iterator.hasNext()) {
+            if (iterator.next().onBack()) {
+                return;
+            } else {
+
+            }
+        }
+        super.onBackPressed();
+
+    }
 }

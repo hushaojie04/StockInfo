@@ -26,17 +26,61 @@
                 android:src="@drawable/icon_down" />
         </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/list_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/arrowiconParent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
+                android:text="切换栏目" />
+        </FrameLayout>
+
         <sj.android.stock.view.ItemHScrollView
             android:id="@+id/typeTab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/arrowiconParent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/arrowiconParent"
+            android:background="@drawable/bottom_line_gray" />
     </RelativeLayout>
 
-
-    <sj.android.stock.view.CatchTouchViewPager
-        android:id="@+id/content"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <sj.android.stock.view.CatchTouchViewPager
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/list_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#aaffffff" />
+
+            <ListView
+                android:id="@+id/lanmu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </FrameLayout>
+    </FrameLayout>
+
+
 </LinearLayout>

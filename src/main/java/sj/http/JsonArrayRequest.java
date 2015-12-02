@@ -23,8 +23,9 @@ public class JsonArrayRequest extends ObjectRequest<JSONArray> {
     }
 
     public void postRequest() {
+        String request = "";
         try {
-            String request = mHttpClientConn.performRequest(this, false);
+            request = mHttpClientConn.performRequest(this, false);
             if (request.equals("null")) {
                 response.result = null;
                 return;
@@ -37,6 +38,7 @@ public class JsonArrayRequest extends ObjectRequest<JSONArray> {
             e.printStackTrace();
         } catch (JSONException e) {
             LogUtils.D("JSONException error: " + e.getMessage());
+            LogUtils.D("request: " + request);
             response.error.setDescription(e.getMessage());
             e.printStackTrace();
         } catch (NullPointerException e) {
