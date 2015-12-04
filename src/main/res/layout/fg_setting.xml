@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:background="#ffffff">
 
-            <ImageButton
+            <sj.android.stock.view.BackButton
                 android:id="@+id/backBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -43,10 +43,10 @@
             android:id="@+id/clearcache"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="#ffffff"
             android:orientation="horizontal"
             android:paddingBottom="13dp"
-            android:layout_marginTop="10dp"
             android:paddingTop="13dp">
 
             <TextView

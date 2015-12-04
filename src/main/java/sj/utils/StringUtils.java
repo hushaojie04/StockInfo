@@ -5,6 +5,8 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.regex.Matcher;
@@ -170,9 +172,18 @@ public class StringUtils {
 
     public static String parseTimestamp(long timestamp) {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");//定义格式，不显示毫秒
-        Timestamp now = new Timestamp(timestamp*1000);//获取系统当前时间
+        Timestamp now = new Timestamp(timestamp * 1000);//获取系统当前时间
         String str = df.format(now);
         return str;
     }
 
+    public static String InputStreamTOString(InputStream in, String encoding) throws Exception {
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] data = new byte[1024];
+        int count = -1;
+        while ((count = in.read(data, 0, 1024)) != -1)
+            outStream.write(data, 0, count);
+        data = null;
+        return new String(outStream.toByteArray(), encoding);
+    }
 }

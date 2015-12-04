@@ -61,7 +61,6 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         mOriginator = new Originator();
         mementoKey = MD5Util.MD5("arctype" + arctype);
         isLoadAndRefresh = false;
-        LogUtils.D("############ArticleListFragment###########" + typeName);
     }
 
     XListView mListView;

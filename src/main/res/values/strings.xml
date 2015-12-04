@@ -32,4 +32,11 @@
     <string name="feedback">意见反馈</string>
     <string name="setting">设置</string>
     <string name="reg_image">src=\\"\/uploads\/\S*\"</string>
+    <string name="cant_find_sd">没发现SD卡</string>
+
+    <string name="promt">提示</string>
+    <string name="confirm">确定</string>
+    <string name="cancle">取消</string>
+    <string name="isupdate">是否升级程序?</string>
+
 </resources>

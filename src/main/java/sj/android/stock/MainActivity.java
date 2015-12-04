@@ -21,8 +21,10 @@ import sj.android.stock.article.ArticleFragment;
 import sj.android.stock.fragment.FindFragment;
 import sj.android.stock.fragment.MessageFragment;
 import sj.android.stock.mine.MyFragment;
+import sj.android.stock.update.UpdateDialogHelper;
 import sj.android.stock.view.FragmentTabHost;
 import sj.utils.FileUtils;
+import sj.utils.LogUtils;
 
 public class MainActivity extends FragmentActivity {
     private ViewPager vp;
@@ -40,6 +42,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LogUtils.D("######################mainactivity onCreate");
+        new UpdateDialogHelper(this).loadApkInfo();
         ImageLoader.from(this);
         FileUtils.mContext = this;
         Cache.from(this);
@@ -48,6 +52,12 @@ public class MainActivity extends FragmentActivity {
         initHead();
         initView();
         ToastManager.getManager().init(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LogUtils.D("######################mainactivity onResume");
     }
 
     /**

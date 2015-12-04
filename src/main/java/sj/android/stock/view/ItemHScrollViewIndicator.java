@@ -41,9 +41,13 @@ public class ItemHScrollViewIndicator extends LinearLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawBitmap(BitmapUtils.resizeBitmap(backgroud, getMeasuredWidth(), 15), 0, getHeight() - 15, paint);
+        Bitmap bitmap = BitmapUtils.resizeBitmap(backgroud, getMeasuredWidth(), 15);
+        if (bitmap != null)
+            canvas.drawBitmap(bitmap, 0, getHeight() - 15, paint);
         if ((int) Math.abs(endX - startX - paddingLeft - paddingRight) > 0) {
-            canvas.drawBitmap(BitmapUtils.resizeBitmap(foreground, (int) Math.abs(endX - startX - paddingLeft - paddingRight), 15), startX + paddingLeft, getHeight() - 15, paint);
+            bitmap = BitmapUtils.resizeBitmap(foreground, (int) Math.abs(endX - startX - paddingLeft - paddingRight), 15);
+            if (bitmap != null)
+                canvas.drawBitmap(bitmap, startX + paddingLeft, getHeight() - 15, paint);
         }
     }
 

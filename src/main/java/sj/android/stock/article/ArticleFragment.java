@@ -150,8 +150,8 @@ public class ArticleFragment extends Fragment implements ActivityHandle, Respons
                     (int) view.getY(),
                     mViewPager.getMeasuredWidth(),
                     mViewPager.getMeasuredHeight());
-            if (bitmap == null) LogUtils.D("##################");
-            list_content.setBackground(new BitmapDrawable(BitmapUtils.blurBitmap(bitmap, getActivity())));
+            if (bitmap != null)
+                list_content.setBackground(new BitmapDrawable(BitmapUtils.blurBitmap(bitmap, getActivity())));
 //                    list_content.setBackground(new BitmapDrawable(BitmapUtils.compressBmpFromBmp(bitmap)));
             mItemHScrollView.setVisibility(View.GONE);
             mViewPager.setVisibility(View.GONE);

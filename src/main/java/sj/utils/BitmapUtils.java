@@ -24,7 +24,7 @@ import java.io.IOException;
  */
 public class BitmapUtils {
     public static Bitmap resizeBitmap(Bitmap bitmap, int w, int h) {
-        if (bitmap != null) {
+        if (bitmap != null && w > 0 && h > 0) {
             int width = bitmap.getWidth();
             int height = bitmap.getHeight();
             int newWidth = w;
@@ -291,6 +291,7 @@ public class BitmapUtils {
     }
 
     public static Bitmap shot(View view, int x, int y, int width, int height) {
+        if (width <= 0 || height <= 0) return null;
         //View是你需要截图的View
         // 获取状态栏高度 /
         LogUtils.D(x + " " + y + " " + width + " " + height);
