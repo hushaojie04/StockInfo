@@ -13,6 +13,8 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.umeng.analytics.MobclickAgent;
+
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
 import sj.utils.LogUtils;
@@ -100,13 +102,13 @@ public class LoginFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", "onResume " + " " + " " + this.getClass().getSimpleName());
+        MobclickAgent.onPageStart(this.getClass().getSimpleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("log", "onPause " + this.getClass().getSimpleName());
+        MobclickAgent.onPageEnd(this.getClass().getSimpleName());
     }
 
     class MyOnFocusChangeListener implements View.OnFocusChangeListener {

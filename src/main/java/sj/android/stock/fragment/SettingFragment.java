@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import com.umeng.analytics.MobclickAgent;
+
 import sj.android.stock.DataCleanManager;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
@@ -39,13 +41,13 @@ public class SettingFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", "onResume " + " " + " " + this.getClass().getSimpleName());
+        MobclickAgent.onPageStart(this.getClass().getSimpleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("log", "onPause " + this.getClass().getSimpleName());
+        MobclickAgent.onPageEnd(this.getClass().getSimpleName());
     }
 
     class MyOnClickListener implements View.OnClickListener {

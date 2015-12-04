@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import com.umeng.analytics.MobclickAgent;
+
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -171,14 +173,13 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", arctype + " onResume " + " " + " " + this.getClass().getSimpleName());
+        MobclickAgent.onPageStart(this.getClass().getSimpleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("log", arctype + " onPause " + this.getClass().getSimpleName());
-        Caretaker.getInstance().setMemento(mementoKey, mOriginator.createMemento());
+        MobclickAgent.onPageEnd(this.getClass().getSimpleName());
     }
 
 

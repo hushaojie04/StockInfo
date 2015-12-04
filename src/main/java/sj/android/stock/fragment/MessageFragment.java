@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.umeng.analytics.MobclickAgent;
+
 import sj.android.stock.R;
 
 /**
@@ -19,12 +21,12 @@ public class MessageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("log", "onResume " + " "+ " " + this.getClass().getSimpleName());
+        MobclickAgent.onPageStart(this.getClass().getSimpleName());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("log", "onPause " + this.getClass().getSimpleName());
+        MobclickAgent.onPageEnd(this.getClass().getSimpleName());
     }
 }

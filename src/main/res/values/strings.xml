@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Stock information</string>
+    <string name="app_name">LOL趣事</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -38,5 +38,7 @@
     <string name="confirm">确定</string>
     <string name="cancle">取消</string>
     <string name="isupdate">是否升级程序?</string>
+    <string name="nofind">没有发现</string>
+    <string name="nofindfunc">暂时没有发现此功能</string>
 
 </resources>

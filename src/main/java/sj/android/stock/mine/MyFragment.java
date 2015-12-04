@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import sj.android.stock.MainActivity;
 import sj.android.stock.R;
+import sj.android.stock.ToastManager;
 import sj.android.stock.fragment.LoginFragment;
 import sj.android.stock.fragment.SettingFragment;
 
@@ -67,11 +68,15 @@ public class MyFragment extends Fragment {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.accountinfo:
-                    activity.showFg(new LoginFragment());
-                    break;
+//                case R.id.accountinfo:
+//                    activity.showFg(new LoginFragment());
+//
+//                    break;
                 case R.id.setting:
                     activity.showFg(new SettingFragment());
+                    break;
+                default:
+                    ToastManager.getManager().showToast(R.string.nofindfunc);
                     break;
             }
         }

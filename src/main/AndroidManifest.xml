@@ -22,6 +22,9 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".MyApplication"
@@ -50,6 +53,15 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:hardwareAccelerated="true"
             android:label="@string/app_name"></activity>
+
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="56614df667e58e8e02002023">
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="mandroid" />
+
     </application>
 
 </manifest>
