@@ -11,15 +11,17 @@ import android.widget.LinearLayout;
 
 import com.umeng.analytics.MobclickAgent;
 
+import sj.android.stock.ActivityHandle;
 import sj.android.stock.DataCleanManager;
 import sj.android.stock.R;
 import sj.android.stock.ScreenAdapter;
+import sj.android.stock.ScreenManager;
 import sj.android.stock.ToastManager;
 
 /**
  * Created by Administrator on 2015/10/22.
  */
-public class SettingFragment extends Fragment {
+public class SettingFragment extends Fragment implements ActivityHandle {
     View root;
     View clearcache;
 
@@ -28,7 +30,14 @@ public class SettingFragment extends Fragment {
         initHead();
         clearcache = root.findViewById(R.id.clearcache);
         clearcache.setOnClickListener(new MyOnClickListener());
+        ScreenManager.getInstance().addActivityHandle(this);
         return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ScreenManager.getInstance().removeActivityHandle(this);
     }
 
     private void initHead() {
@@ -50,6 +59,15 @@ public class SettingFragment extends Fragment {
         MobclickAgent.onPageEnd(this.getClass().getSimpleName());
     }
 
+    @Override
+    public boolean onBack() {
+        if (isAdded()) {
+            getFragmentManager().popBackStack();
+            return true;
+        }
+        return false;
+    }
+
     class MyOnClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
@@ -61,4 +79,5 @@ public class SettingFragment extends Fragment {
             }
         }
     }
+
 }

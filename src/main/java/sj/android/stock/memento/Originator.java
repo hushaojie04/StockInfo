@@ -41,18 +41,18 @@ public class Originator {
         return temp;
     }
 
-    public void addFirst(ArticleInfo info) {
+    public synchronized void addFirst(ArticleInfo info) {
         queue.addFirst(info);
     }
 
-    public void addFirstAll(List<ArticleInfo> infos) {
+    public synchronized void addFirstAll(List<ArticleInfo> infos) {
         ArrayDeque<ArticleInfo> temp = queue.clone();
         queue.clear();
         queue.addAll(infos);
         queue.addAll(temp);
     }
 
-    public void addLastAll(List<ArticleInfo> infos) {
+    public synchronized void addLastAll(List<ArticleInfo> infos) {
         queue.addAll(infos);
     }
 
@@ -71,7 +71,7 @@ public class Originator {
         }
         this.queue.addAll(memento.getArrayDeque());
         while (queue.size() > MAX) {
-                queue.pollLast();
+            queue.pollLast();
         }
         LogUtils.D("restoreMemento queue size  ==" + queue.size());
     }

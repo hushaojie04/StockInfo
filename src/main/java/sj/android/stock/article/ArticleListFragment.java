@@ -117,6 +117,12 @@ public class ArticleListFragment extends Fragment implements XListView.IXListVie
         return root;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Caretaker.getInstance().setMemento(mementoKey, mOriginator.createMemento());
+    }
+
     int requestid = -1;
 
     private void load(int start, int num, boolean isReflesh, String tag) {

@@ -3,8 +3,10 @@ package sj.android.stock;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,6 @@ public class MainActivity extends FragmentActivity {
     private FragmentTabHost mTabHost;
     private TextView titleView;
     private ImageButton searchBtn;
-    private ArrayList<ActivityHandle> mActivityHandles = new ArrayList<ActivityHandle>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +55,20 @@ public class MainActivity extends FragmentActivity {
         initHead();
         initView();
         ToastManager.getManager().init(this);
+
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
+        isConfirmExit = true;
         LogUtils.D("######################mainactivity onResume");
     }
 
@@ -67,6 +76,7 @@ public class MainActivity extends FragmentActivity {
     protected void onPause() {
         super.onPause();
         MobclickAgent.onPause(this);
+        ToastManager.getManager().cancelToast();
     }
 
     /**
@@ -75,13 +85,11 @@ public class MainActivity extends FragmentActivity {
     private void initView() {
         ArrayList<Fragment> fragmentList = new ArrayList<Fragment>();
         ArticleFragment articleFragment = new ArticleFragment();
-        mActivityHandles.add(articleFragment);
+        ScreenManager.getInstance().addActivityHandle(articleFragment);
         fragmentList.add(articleFragment);
         fragmentList.add(new FindFragment());
         fragmentList.add(new MessageFragment());
         fragmentList.add(new MyFragment());
-
-
         layoutInflater = LayoutInflater.from(this);
         mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
         mTabHost.setTabcontent(android.R.id.tabcontent).setTabs(android.R.id.tabs);
@@ -132,17 +140,28 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    boolean isConfirmExit = true;
+
     @Override
     public void onBackPressed() {
-        Iterator<ActivityHandle> iterator = mActivityHandles.iterator();
-        while (iterator.hasNext()) {
-            if (iterator.next().onBack()) {
-                return;
-            } else {
-
-            }
+        if (ScreenManager.getInstance().handle()) return;
+        if (isConfirmExit) {
+            ToastManager.getManager().showToast(R.string.again_press);
+            isConfirmExit = false;
+            rootView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isConfirmExit = true;
+                }
+            }, 3000);
+            return;
         }
         super.onBackPressed();
 
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return super.onKeyDown(keyCode, event);
     }
 }

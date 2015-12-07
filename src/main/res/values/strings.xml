@@ -40,5 +40,6 @@
     <string name="isupdate">是否升级程序?</string>
     <string name="nofind">没有发现</string>
     <string name="nofindfunc">暂时没有发现此功能</string>
+    <string name="again_press">再按一次退出程序</string>
 
 </resources>

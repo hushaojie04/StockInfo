@@ -61,7 +61,7 @@ public class FragmentTabHost extends RelativeLayout {
         if (fragment.isAdded()) {
             fragment.onResume(); // ����Ŀ��tab��onResume()
         } else {
-            ft.add(tabcontent, fragment);
+            ft.add(tabcontent, fragment, "frag" + position);
         }
         ft.commit();
         showTab(position);
