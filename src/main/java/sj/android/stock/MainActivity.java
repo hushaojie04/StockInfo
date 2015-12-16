@@ -45,6 +45,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Thread.setDefaultUncaughtExceptionHandler(new CrashHandler());
         LogUtils.D("######################mainactivity onCreate");
         new UpdateDialogHelper(this).loadApkInfo();
         ImageLoader.from(this);

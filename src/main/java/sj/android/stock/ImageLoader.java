@@ -172,6 +172,7 @@ public class ImageLoader implements AsyncHandler.Callback, AsyncHandler.Work {
     public Object work() {
         Bitmap bitmap;
         ImageRef imageRef = requestQueue.peek();
+
         if (imageRef == null) return null;
         String url = imageRef.url;
         bitmap = readBitmapFromDirk(imageRef.key);
